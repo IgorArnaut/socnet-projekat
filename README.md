@@ -1,2 +1,2 @@
 # socnet-projekat
-Projekat za predmet Socijalne mreže
+Projekat za predmet Socijalne mreže.
