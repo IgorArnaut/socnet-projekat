@@ -39,7 +39,7 @@ public class GraphReader {
 					return new Link(label);
 				}
 			};
-			
+
 			Transformer<HyperEdgeMetadata, Link> ht = new Transformer<HyperEdgeMetadata, Link>() {
 				public Link transform(HyperEdgeMetadata metadata) {
 					String label = metadata.getProperty("edgelabel");

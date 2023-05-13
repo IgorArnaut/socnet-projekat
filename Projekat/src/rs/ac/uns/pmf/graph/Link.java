@@ -8,7 +8,12 @@ public class Link {
 		this.label = label;
 	}
 
-	public String getLabeL() {
+	public String getLabel() {
+		return this.label;
+	}
+	
+	@Override
+	public String toString() {
 		return this.label;
 	}
 
