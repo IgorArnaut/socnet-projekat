@@ -1,23 +1,23 @@
 package rs.ac.uns.pmf.generators;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import rs.ac.uns.pmf.graph.Link;
 import rs.ac.uns.pmf.graph.Node;
 
-public class ErdosRenyiGenerator {
+public class ErdosRenyiGeneratorMatrix {
 
 	private final String LINE = "--";
 
+	private int linkCount;
+	private double[][] randoms;
+
 	private Node[] nodes;
-	private List<Link> links;
+	private int[][] links;
 	private UndirectedSparseGraph<Node, Link> r;
 
-	public ErdosRenyiGenerator() {
+	public ErdosRenyiGeneratorMatrix() {
+		this.linkCount = 0;
 		this.r = new UndirectedSparseGraph<Node, Link>();
-		this.links = new ArrayList<Link>();
 	}
 
 	private void insertNodes(int n) {
@@ -30,27 +30,36 @@ public class ErdosRenyiGenerator {
 	}
 
 	private void populateLinks(int n) {
+		this.links = new int[n][n];
+		this.randoms = new double[n][n];
+
 		for (int i = 0; i < n - 1; i++) {
-			for (int j = i + 1; j < n; j++)
-				links.add(new Link(i + LINE + j));
+			for (int j = i + 1; j < n; j++) {
+				links[i][j] = 1;
+				randoms[i][j] = Math.random();
+				linkCount++;
+			}
 		}
 	}
 
 	private void insertLinks(int l) {
-		if (links.size() > l) {
-			double probability = 1.0 / links.size();
+		if (linkCount > l) {
+			int k = 0;
 
-			for (int i = 0; i < l; i++) {
-				double random = Math.random();
+			for (int i = 0; i < links.length - 1 && k < l; i++) {
+				for (int j = i + 1; j < links.length && k < l; j++) {
+					double probability = 1.0 / linkCount;
+					k++;
 
-				if (random >= probability) {
-					int index = (int) random * links.size();
-					Link link = links.remove(index);
+					if (randoms[i][j] >= probability) {
+						Link link = new Link(i + LINE + j);
+						links[i][j] = 0;
+						linkCount--;
 
-					String[] endpoints = link.getLabel().split(LINE);
-					Node first = nodes[Integer.parseInt(endpoints[0])];
-					Node second = nodes[Integer.parseInt(endpoints[1])];
-					r.addEdge(link, first, second);
+						Node first = nodes[i];
+						Node second = nodes[j];
+						r.addEdge(link, first, second);
+					}
 				}
 			}
 		}
