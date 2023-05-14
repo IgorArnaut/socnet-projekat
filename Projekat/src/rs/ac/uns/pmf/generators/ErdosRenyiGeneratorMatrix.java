@@ -4,20 +4,16 @@ import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import rs.ac.uns.pmf.graph.Link;
 import rs.ac.uns.pmf.graph.Node;
 
-public class ErdosRenyiGeneratorMatrix {
-
-	private final String LINE = "--";
+public class ErdosRenyiGeneratorMatrix extends Generator {
 
 	private int linkCount;
 	private double[][] randoms;
 
 	private Node[] nodes;
 	private int[][] links;
-	private UndirectedSparseGraph<Node, Link> r;
 
 	public ErdosRenyiGeneratorMatrix() {
 		this.linkCount = 0;
-		this.r = new UndirectedSparseGraph<Node, Link>();
 	}
 
 	private void insertNodes(int n) {
@@ -49,23 +45,23 @@ public class ErdosRenyiGeneratorMatrix {
 			for (int i = 0; i < links.length - 1 && k < l; i++) {
 				for (int j = i + 1; j < links.length && k < l; j++) {
 					double probability = 1.0 / linkCount;
-					k++;
 
 					if (randoms[i][j] >= probability) {
 						Link link = new Link(i + LINE + j);
 						links[i][j] = 0;
 						linkCount--;
 
-						Node first = nodes[i];
-						Node second = nodes[j];
-						r.addEdge(link, first, second);
+						r.addEdge(link, nodes[i], nodes[j]);
+						k++;
 					}
 				}
 			}
 		}
 	}
 
+	@Override
 	public void generate(int n, int l) {
+		this.r = new UndirectedSparseGraph<Node, Link>();
 		insertNodes(n);
 		populateLinks(n);
 		insertLinks(l);

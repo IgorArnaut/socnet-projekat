@@ -7,17 +7,12 @@ import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import rs.ac.uns.pmf.graph.Link;
 import rs.ac.uns.pmf.graph.Node;
 
-public class ErdosRenyiGenerator {
-
-	private final String LINE = "--";
+public class ErdosRenyiGenerator extends Generator {
 
 	private Node[] nodes;
-	private List<Link> links;
-	private UndirectedSparseGraph<Node, Link> r;
+	private List<Link> s;
 
 	public ErdosRenyiGenerator() {
-		this.r = new UndirectedSparseGraph<Node, Link>();
-		this.links = new ArrayList<Link>();
 	}
 
 	private void insertNodes(int n) {
@@ -30,40 +25,40 @@ public class ErdosRenyiGenerator {
 	}
 
 	private void populateLinks(int n) {
+		this.s = new ArrayList<Link>();
+
 		for (int i = 0; i < n - 1; i++) {
 			for (int j = i + 1; j < n; j++)
-				links.add(new Link(i + LINE + j));
+				s.add(new Link(i + LINE + j));
 		}
 	}
 
 	private void insertLinks(int l) {
-		if (links.size() > l) {
-			double probability = 1.0 / links.size();
+		if (s.size() > l) {
+			int k = 0;
 
-			for (int i = 0; i < l; i++) {
-				double random = Math.random();
+			for (int i = 0; i < s.size() && k < l; i++) {
+				double probability = 1.0 / s.size();
 
-				if (random >= probability) {
-					int index = (int) random * links.size();
-					Link link = links.remove(index);
+				if (Math.random() >= probability) {
+					Link link = s.remove(i);
 
 					String[] endpoints = link.getLabel().split(LINE);
-					Node first = nodes[Integer.parseInt(endpoints[0])];
-					Node second = nodes[Integer.parseInt(endpoints[1])];
-					r.addEdge(link, first, second);
+					int first = Integer.parseInt(endpoints[0]);
+					int second = Integer.parseInt(endpoints[1]);
+					r.addEdge(link, nodes[first], nodes[second]);
+					k++;
 				}
 			}
 		}
 	}
 
+	@Override
 	public void generate(int n, int l) {
+		this.r = new UndirectedSparseGraph<Node, Link>();
 		insertNodes(n);
 		populateLinks(n);
 		insertLinks(l);
-	}
-
-	public UndirectedSparseGraph<Node, Link> getResult() {
-		return this.r;
 	}
 
 }
