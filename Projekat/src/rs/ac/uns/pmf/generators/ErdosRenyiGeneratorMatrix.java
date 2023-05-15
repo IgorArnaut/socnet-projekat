@@ -16,21 +16,21 @@ public class ErdosRenyiGeneratorMatrix extends Generator {
 		this.linkCount = 0;
 	}
 
-	private void insertNodes(int n) {
-		this.nodes = new Node[n];
+	private void insertNodes(int nodeCount) {
+		this.nodes = new Node[nodeCount];
 
-		for (int i = 0; i < n; i++) {
+		for (int i = 0; i < nodeCount; i++) {
 			nodes[i] = new Node(Integer.toString(i));
-			r.addVertex(nodes[i]);
+			graph.addVertex(nodes[i]);
 		}
 	}
 
-	private void populateLinks(int n) {
-		this.links = new int[n][n];
-		this.randoms = new double[n][n];
+	private void populateLinks(int nodeCount) {
+		this.links = new int[nodeCount][nodeCount];
+		this.randoms = new double[nodeCount][nodeCount];
 
-		for (int i = 0; i < n - 1; i++) {
-			for (int j = i + 1; j < n; j++) {
+		for (int i = 0; i < nodeCount - 1; i++) {
+			for (int j = i + 1; j < nodeCount; j++) {
 				links[i][j] = 1;
 				randoms[i][j] = Math.random();
 				linkCount++;
@@ -38,37 +38,43 @@ public class ErdosRenyiGeneratorMatrix extends Generator {
 		}
 	}
 
-	private void insertLinks(int l) {
-		if (linkCount > l) {
-			int k = 0;
+	private int insertLink(int insertedCount, int i, int j) {
+		double probability = 1.0 / linkCount;
 
-			for (int i = 0; i < links.length - 1 && k < l; i++) {
-				for (int j = i + 1; j < links.length && k < l; j++) {
-					double probability = 1.0 / linkCount;
+		if (randoms[i][j] >= probability) {
+			Link link = new Link(i + LINE + j);
+			links[i][j] = 0;
 
-					if (randoms[i][j] >= probability) {
-						Link link = new Link(i + LINE + j);
-						links[i][j] = 0;
-						linkCount--;
+			graph.addEdge(link, nodes[i], nodes[j]);
+			insertedCount++;
+		}
 
-						r.addEdge(link, nodes[i], nodes[j]);
-						k++;
-					}
-				}
+		return insertedCount;
+	}
+
+	private void insertLinks() {
+		if (linkCount >= totalLinkCount) {
+			int insertedCount = 0;
+
+			for (int i = 0; i < links.length - 1 && insertedCount < totalLinkCount; i++) {
+				for (int j = i + 1; j < links.length && insertedCount < totalLinkCount; j++)
+					insertedCount = insertLink(insertedCount, i, j);
 			}
 		}
 	}
 
 	@Override
-	public void generate(int n, int l) {
-		this.r = new UndirectedSparseGraph<Node, Link>();
-		insertNodes(n);
-		populateLinks(n);
-		insertLinks(l);
+	public void generate(int nodeCount, int linkCount) {
+		this.totalLinkCount = linkCount;
+		this.graph = new UndirectedSparseGraph<Node, Link>();
+
+		insertNodes(nodeCount);
+		populateLinks(nodeCount);
+		insertLinks();
 	}
 
 	public UndirectedSparseGraph<Node, Link> getResult() {
-		return this.r;
+		return this.graph;
 	}
 
 }

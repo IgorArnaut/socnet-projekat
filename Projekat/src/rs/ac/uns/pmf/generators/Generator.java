@@ -8,12 +8,13 @@ public abstract class Generator {
 
 	protected final String LINE = "--";
 
-	protected UndirectedSparseGraph<Node, Link> r;
+	protected int totalLinkCount;
+	protected UndirectedSparseGraph<Node, Link> graph;
 
-	public abstract void generate(int n, int l);
+	public abstract void generate(int nodeCount, int linkCount);
 
 	public UndirectedSparseGraph<Node, Link> getResult() {
-		return this.r;
+		return this.graph;
 	}
 
 }
