@@ -7,19 +7,19 @@ import java.io.PrintWriter;
 
 import org.apache.commons.collections15.Transformer;
 
-import edu.uci.ics.jung.graph.UndirectedSparseGraph;
+import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.io.GraphMLWriter;
 import rs.ac.uns.pmf.graph.Link;
 import rs.ac.uns.pmf.graph.Node;
 
 public class GraphWriter {
 
-	public static void writeGraphml(UndirectedSparseGraph<Node, Link> graph, String filename) {
+	public static void writeGraphml(Graph<Node, Link> graph, String filename) {
 		GraphMLWriter<Node, Link> writer = new GraphMLWriter<Node, Link>();
 
 		writer.setVertexIDs(new Transformer<Node, String>() {
 			public String transform(Node node) {
-				return node.getLabel();
+				return node.getId();
 			}
 		});
 
@@ -31,7 +31,7 @@ public class GraphWriter {
 
 		writer.addVertexData("label", "label", "", new Transformer<Node, String>() {
 			public String transform(Node node) {
-				return node.getLabel();
+				return node.getId();
 			}
 		});
 

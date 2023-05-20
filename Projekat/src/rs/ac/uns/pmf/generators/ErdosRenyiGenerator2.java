@@ -2,6 +2,7 @@ package rs.ac.uns.pmf.generators;
 
 import java.util.Arrays;
 
+import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import rs.ac.uns.pmf.graph.Link;
 import rs.ac.uns.pmf.graph.Node;
@@ -11,17 +12,21 @@ public class ErdosRenyiGenerator2 extends Generator {
 	private Node[] nodes;
 	private Link[][] links;
 
-	public ErdosRenyiGenerator2() {
+	private static final Generator INSTANCE = new ErdosRenyiGenerator2();
+	
+	private ErdosRenyiGenerator2() {
+	}
+	
+	public static Generator instance() {
+		return INSTANCE;
 	}
 
 	// Kreiraj mrezu R sa N cvorova i bez linkova
 	private void insertNodes(int nodeCount) {
 		this.nodes = new Node[nodeCount];
 
-		for (int i = 0; i < nodeCount; i++) {
-			nodes[i] = new Node(Integer.toString(i));
-			graph.addVertex(nodes[i]);
-		}
+		for (int i = 0; i < nodeCount; i++)
+			nodes[i] = new Node(String.format("%02d", i));
 	}
 
 	// Kreiraj S - skup svih mogucih linkova u R
@@ -33,7 +38,7 @@ public class ErdosRenyiGenerator2 extends Generator {
 
 		for (int i = 0; i < nodes.length - 1; i++) {
 			for (int j = i + 1; j < nodes.length; j++)
-				links[i][j] = new Link(i + LINE + j);
+				links[i][j] = new Link(String.format("%02d%s%02d", i, LINE, j));
 		}
 	}
 
@@ -68,7 +73,7 @@ public class ErdosRenyiGenerator2 extends Generator {
 		insertLinks(probability);
 	}
 
-	public UndirectedSparseGraph<Node, Link> getResult() {
+	public Graph<Node, Link> getResult() {
 		return this.graph;
 	}
 

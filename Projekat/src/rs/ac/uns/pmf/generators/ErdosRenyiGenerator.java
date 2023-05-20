@@ -12,17 +12,21 @@ public class ErdosRenyiGenerator extends Generator {
 	private Node[] nodes;
 	private List<Link> links;
 
-	public ErdosRenyiGenerator() {
+	private static final Generator INSTANCE = new ErdosRenyiGenerator();
+
+	private ErdosRenyiGenerator() {
+	}
+
+	public static Generator instance() {
+		return INSTANCE;
 	}
 
 	// Kreiraj mrezu R sa N cvorova i bez linkova
 	private void insertNodes(int nodeCount) {
 		this.nodes = new Node[nodeCount];
 
-		for (int i = 0; i < nodeCount; i++) {
-			nodes[i] = new Node(Integer.toString(i));
-			graph.addVertex(nodes[i]);
-		}
+		for (int i = 0; i < nodeCount; i++)
+			nodes[i] = new Node(String.format("%02d", i));
 	}
 
 	// Kreiraj S - skup svih mogucih linkova u R
@@ -31,7 +35,7 @@ public class ErdosRenyiGenerator extends Generator {
 
 		for (int i = 0; i < nodes.length - 1; i++) {
 			for (int j = i + 1; j < nodes.length; j++)
-				links.add(new Link(i + LINE + j));
+				links.add(new Link(String.format("%02d%s%02d", i, LINE, j)));
 		}
 	}
 
@@ -40,7 +44,7 @@ public class ErdosRenyiGenerator extends Generator {
 		if (random.nextDouble() >= probability) {
 			// S = S - {a}
 			Link link = links.remove(i);
-			
+
 			String[] endpoints = link.getLabel().split(LINE);
 			int first = Integer.parseInt(endpoints[0]);
 			int second = Integer.parseInt(endpoints[1]);

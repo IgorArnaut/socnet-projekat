@@ -3,129 +3,72 @@
     <key attr.name="Edge Label" attr.type="string" for="edge" id="edgelabel"/>
     <key attr.name="weight" attr.type="double" for="edge" id="weight"/>
     <graph edgedefault="undirected">
-        <node id="0">
-            <data key="label">0</data>
-        </node>
-        <node id="7">
-            <data key="label">7</data>
-        </node>
-        <node id="1">
-            <data key="label">1</data>
-        </node>
-        <node id="2">
-            <data key="label">2</data>
-        </node>
-        <node id="12">
-            <data key="label">12</data>
-        </node>
-        <node id="3">
-            <data key="label">3</data>
-        </node>
-        <node id="14">
-            <data key="label">14</data>
-        </node>
-        <node id="4">
-            <data key="label">4</data>
-        </node>
-        <node id="8">
-            <data key="label">8</data>
-        </node>
-        <node id="5">
-            <data key="label">5</data>
-        </node>
-        <node id="6">
-            <data key="label">6</data>
-        </node>
-        <node id="9">
-            <data key="label">9</data>
-        </node>
-        <node id="11">
-            <data key="label">11</data>
-        </node>
-        <node id="13">
-            <data key="label">13</data>
-        </node>
-        <node id="10">
-            <data key="label">10</data>
-        </node>
-        <edge id="140" source="0" target="7">
-            <data key="edgelabel">0--7</data>
+        <node id="000"/>
+        <node id="001"/>
+        <node id="002"/>
+        <node id="003"/>
+        <node id="004"/>
+        <node id="005"/>
+        <node id="006"/>
+        <node id="007"/>
+        <node id="008"/>
+        <node id="009"/>
+        <node id="010"/>
+        <node id="011"/>
+        <node id="012"/>
+        <node id="013"/>
+        <edge id="55" source="000" target="001">
             <data key="weight">1.0</data>
         </edge>
-        <edge id="141" source="1" target="7">
-            <data key="edgelabel">1--7</data>
+        <edge id="56" source="001" target="002">
             <data key="weight">1.0</data>
         </edge>
-        <edge id="142" source="2" target="12">
-            <data key="edgelabel">2--12</data>
+        <edge id="57" source="002" target="003">
             <data key="weight">1.0</data>
         </edge>
-        <edge id="143" source="3" target="14">
-            <data key="edgelabel">3--14</data>
+        <edge id="58" source="003" target="004">
             <data key="weight">1.0</data>
         </edge>
-        <edge id="144" source="4" target="8">
-            <data key="edgelabel">4--8</data>
+        <edge id="59" source="003" target="005">
             <data key="weight">1.0</data>
         </edge>
-        <edge id="145" source="5" target="6">
-            <data key="edgelabel">5--6</data>
+        <edge id="60" source="005" target="006">
             <data key="weight">1.0</data>
         </edge>
-        <edge id="146" source="5" target="9">
-            <data key="edgelabel">5--9</data>
+        <edge id="61" source="005" target="007">
             <data key="weight">1.0</data>
         </edge>
-        <edge id="147" source="6" target="9">
-            <data key="edgelabel">6--9</data>
+        <edge id="62" source="007" target="008">
             <data key="weight">1.0</data>
         </edge>
-        <edge id="148" source="7" target="12">
-            <data key="edgelabel">7--12</data>
+        <edge id="63" source="008" target="009">
             <data key="weight">1.0</data>
         </edge>
-        <edge id="149" source="8" target="11">
-            <data key="edgelabel">8--11</data>
+        <edge id="64" source="009" target="010">
             <data key="weight">1.0</data>
         </edge>
-        <edge id="150" source="8" target="14">
-            <data key="edgelabel">8--14</data>
+        <edge id="65" source="008" target="011">
             <data key="weight">1.0</data>
         </edge>
-        <edge id="151" source="9" target="13">
-            <data key="edgelabel">9--13</data>
+        <edge id="66" source="007" target="011">
             <data key="weight">1.0</data>
         </edge>
-        <edge id="152" source="10" target="11">
-            <data key="edgelabel">10--11</data>
+        <edge id="67" source="003" target="007">
             <data key="weight">1.0</data>
         </edge>
-        <edge id="153" source="10" target="12">
-            <data key="edgelabel">10--12</data>
+        <edge id="68" source="003" target="008">
             <data key="weight">1.0</data>
         </edge>
-        <edge id="154" source="10" target="13">
-            <data key="edgelabel">10--13</data>
+        <edge id="69" source="002" target="008">
             <data key="weight">1.0</data>
         </edge>
-        <edge id="155" source="11" target="13">
-            <data key="edgelabel">11--13</data>
+        <edge id="70" source="002" target="011">
             <data key="weight">1.0</data>
         </edge>
-        <edge id="156" source="11" target="14">
-            <data key="edgelabel">11--14</data>
+        <edge id="71" source="002" target="012">
             <data key="weight">1.0</data>
         </edge>
-        <edge id="157" source="12" target="13">
-            <data key="edgelabel">12--13</data>
-            <data key="weight">1.0</data>
-        </edge>
-        <edge id="158" source="12" target="14">
-            <data key="edgelabel">12--14</data>
-            <data key="weight">1.0</data>
-        </edge>
-        <edge id="159" source="13" target="14">
-            <data key="edgelabel">13--14</data>
+        <edge id="72" source="001" target="013">
             <data key="weight">1.0</data>
         </edge>
     </graph>

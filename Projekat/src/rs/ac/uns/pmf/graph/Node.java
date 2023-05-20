@@ -2,19 +2,18 @@ package rs.ac.uns.pmf.graph;
 
 public class Node {
 
-	private String label;
-
-	public Node(String label) {
-		this.label = label;
+	private String id;
+	
+	public Node(String id) {
+		this.id = id;
 	}
-
-	public String getLabel() {
-		return label;
+	
+	public String getId() {
+		return this.id;
 	}
-
+	
 	@Override
 	public String toString() {
-		return this.label;
+		return this.id;
 	}
-
 }
