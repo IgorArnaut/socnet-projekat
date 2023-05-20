@@ -1,18 +1,17 @@
 package rs.ac.uns.pmf.generators;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import rs.ac.uns.pmf.graph.Link;
 import rs.ac.uns.pmf.graph.Node;
 
-public class ErdosRenyiGenerator extends Generator {
+public class ErdosRenyiGenerator2 extends Generator {
 
 	private Node[] nodes;
-	private List<Link> links;
+	private Link[][] links;
 
-	public ErdosRenyiGenerator() {
+	public ErdosRenyiGenerator2() {
 	}
 
 	// Kreiraj mrezu R sa N cvorova i bez linkova
@@ -27,33 +26,35 @@ public class ErdosRenyiGenerator extends Generator {
 
 	// Kreiraj S - skup svih mogucih linkova u R
 	private void populateLinks() {
-		this.links = new ArrayList<Link>();
+		this.links = new Link[nodes.length][nodes.length];
+		
+		for (int i = 0; i < nodes.length; i++)
+			Arrays.fill(links[i], null);
 
 		for (int i = 0; i < nodes.length - 1; i++) {
 			for (int j = i + 1; j < nodes.length; j++)
-				links.add(new Link(i + LINE + j));
+				links[i][j] = new Link(i + LINE + j);
 		}
 	}
 
-	private void insertLink(int i, double probability) {
+	private void insertLink(int i, int j, double probability) {
 		// a = odaberi link iz S gde je 1/|S| verovatnoca odabira bilo kog linka
 		if (random.nextDouble() >= probability) {
-			// S = S - {a}
-			Link link = links.remove(i);
-			
-			String[] endpoints = link.getLabel().split(LINE);
-			int first = Integer.parseInt(endpoints[0]);
-			int second = Integer.parseInt(endpoints[1]);
-
 			// Dodaj a u R
-			graph.addEdge(link, nodes[first], nodes[second]);
+			graph.addEdge(links[i][j], nodes[i], nodes[j]);
+			// S = S - {a}
+			links[i][j] = null;
 		}
 	}
 
 	private void insertLinks(double probability) {
-		// Dok iz skupa S nije odabrano L linkova
-		for (int i = 0; i < links.size(); i++)
-			insertLink(i, probability);
+		// Dok iz skupa S nije odarbano L linkova
+		for (int i = 0; i < nodes.length - 1; i++) {
+			for (int j = i + 1; j < nodes.length; j++) {
+				insertLink(i, j, probability);
+				links[i][j] = null;
+			}
+		}
 	}
 
 	@Override
@@ -65,6 +66,10 @@ public class ErdosRenyiGenerator extends Generator {
 		// Kreiraj S - skup svih mogucih linkova u R
 		populateLinks();
 		insertLinks(probability);
+	}
+
+	public UndirectedSparseGraph<Node, Link> getResult() {
+		return this.graph;
 	}
 
 }

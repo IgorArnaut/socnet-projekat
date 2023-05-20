@@ -12,51 +12,53 @@ public class BarabasiAlbertGenerator extends Generator {
 		this.erg = new ErdosRenyiGenerator();
 	}
 
-	private int insertLinks(int nodeCount, int currentLinkCount, int i, Node newNode, int newDegree, int degreeSum) {
+	private void insertLink(int i, int j, Node newNode, Node oldNode, double probability) {
+		if (random.nextDouble() >= probability) {
+			Link link = new Link(i + LINE + j);
+			graph.addEdge(link, newNode, oldNode);
+		}
+	}
+
+	private void insertLinks(int i, int nodeCount, Node newNode, int newDegree, int degreeSum) {
 		int insertedCount = 0;
 
 		for (int j = 0; j < nodeCount && insertedCount < newDegree; j++) {
 			Node oldNode = (Node) graph.getVertices().toArray()[j];
 			int oldDegree = graph.degree(oldNode);
+			
+			// Verovatnoca da stari cvor bude povezan sa novim cvorom je direktno proporcionalna stepenu starog cvora
 			double probability = oldDegree / degreeSum;
 
-			if (currentLinkCount < totalLinkCount) {
-				if (Math.random() >= probability) {
-					Link link = new Link(i + LINE + j);
-					graph.addEdge(link, newNode, oldNode);
-					currentLinkCount++;
-				}
-			}
+			insertLink(i, j, newNode, oldNode, probability);
 		}
-
-		return currentLinkCount;
 	}
 
-	private int insertNode(int nodeCount, int currentLinkCount, int i) {
-		Node newNode = new Node(Integer.toString(i));
-		int newDegree = (int) Math
-				.round(graph.getVertices().stream().mapToInt(current -> graph.degree(current)).average().getAsDouble());
+	private void insertNode(int nodeCount, int i) {
+		// U svakoj iteraciji dodajemo novi cvor sa m linkova (m < m_0)
+		int newDegree = (int) Math.round(graph.getVertices()
+				.stream()
+				.mapToInt(current -> graph.degree(current))
+				.average().getAsDouble());
+		int degreeSum = graph.getVertices()
+				.stream()
+				.mapToInt(current -> graph.degree(current))
+				.sum();
 
-		int degreeSum = graph.getVertices().stream().mapToInt(current -> graph.degree(current)).sum();
+		Node newNode = new Node(Integer.toString(i));
 		graph.addVertex(newNode);
 
-		currentLinkCount = insertLinks(nodeCount, currentLinkCount, i, newNode, newDegree, degreeSum);
-		return currentLinkCount;
+		insertLinks(i, nodeCount, newNode, newDegree, degreeSum);
 	}
 
 	private void insertNewNodes(int nodeCount, int y) {
-		int currentLinkCount = graph.getEdgeCount();
-
 		for (int i = nodeCount; i < y; i++)
-			currentLinkCount = insertNode(nodeCount, currentLinkCount, i);
+			insertNode(nodeCount, i);
 	}
 
-	public void generate(int nodeCount, int linkCount) {
+	public void generate(int nodeCount, double probability) {
+		// Pocetno stanje: random mreza sa m_0 cvorova
 		int erNodeCount = (int) (Math.random() * (nodeCount / 2));
-		int erLinkCount = (int) (Math.random() * (linkCount / 2));
-		this.totalLinkCount = linkCount;
-
-		erg.generate(erNodeCount, erLinkCount);
+		erg.generate(erNodeCount, probability);
 		this.graph = erg.getResult();
 
 		insertNewNodes(erNodeCount, nodeCount);
