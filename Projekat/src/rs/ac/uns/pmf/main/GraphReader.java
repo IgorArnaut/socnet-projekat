@@ -20,7 +20,7 @@ import rs.ac.uns.pmf.graph.Node;
 public class GraphReader {
 
 	private static final String LINE = "--";
-	
+
 	public static Graph<Node, Link> readGraphml(String file) throws GraphIOException {
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			Transformer<GraphMetadata, UndirectedSparseGraph<Node, Link>> gt = new Transformer<GraphMetadata, UndirectedSparseGraph<Node, Link>>() {

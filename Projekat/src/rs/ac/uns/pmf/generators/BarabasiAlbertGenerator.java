@@ -1,68 +1,56 @@
 package rs.ac.uns.pmf.generators;
 
+import java.util.function.ToIntFunction;
+
 import edu.uci.ics.jung.graph.Graph;
 import rs.ac.uns.pmf.graph.Link;
 import rs.ac.uns.pmf.graph.Node;
 
 public class BarabasiAlbertGenerator extends Generator {
 
-	private static final Generator INSTANCE = new BarabasiAlbertGenerator();
-
-	public BarabasiAlbertGenerator() {
-	}
-
-	public static Generator instance() {
-		return INSTANCE;
-	}
-
-	private void insertLink(int i, int j, Node newNode, Node oldNode, double probability) {
-		if (random.nextDouble() >= probability) {
-			Link link = new Link(String.format("%02d%s%02d", i, LINE, j));
-			graph.addEdge(link, newNode, oldNode);
-		}
-	}
-
-	private void insertLinks(int i, int nodeCount, Node newNode, int newDegree, int degreeSum) {
-		int insertedCount = 0;
-
-		for (int j = 0; j < nodeCount && insertedCount < newDegree; j++) {
-			Node oldNode = (Node) graph.getVertices().toArray()[j];
-			int oldDegree = graph.degree(oldNode);
-
-			// Verovatnoca da stari cvor bude povezan sa novim cvorom je direktno
-			// proporcionalna stepenu starog cvora
-			double probability = oldDegree / degreeSum;
-
-			insertLink(i, j, newNode, oldNode, probability);
-		}
-	}
-
-	private void insertNode(int nodeCount, int i) {
-		// U svakoj iteraciji dodajemo novi cvor sa m linkova (m < m_0)
-		int newDegree = (int) Math
-				.round(graph.getVertices().stream().mapToInt(current -> graph.degree(current)).average().getAsDouble());
-		int degreeSum = graph.getVertices().stream().mapToInt(current -> graph.degree(current)).sum();
-
-		Node newNode = new Node(String.format("%02d", i));
-		insertLinks(i, nodeCount, newNode, newDegree, degreeSum);
-	}
-
-	private void insertNewNodes(int nodeCount, int y) {
-		for (int i = nodeCount; i < y; i++)
-			insertNode(nodeCount, i);
-	}
-
-	public void generate(int nodeCount, double probability) {
-		// Pocetno stanje: random mreza sa m_0 cvorova
+	public Graph<Node, Link> generate(int nodeCount, double probability) {
 		int erNodeCount = (int) (Math.random() * (nodeCount / 2));
-		ErdosRenyiGenerator.instance().generate(erNodeCount, probability);
-		this.graph = ErdosRenyiGenerator.instance().getResult();
 
-		insertNewNodes(erNodeCount, nodeCount);
+		ErdosRenyiGenerator generator = new ErdosRenyiGenerator();
+		this.graph = generator.generate(erNodeCount, probability);
+
+		insertNewNodes(nodeCount, erNodeCount);
+		return graph;
 	}
 
-	public Graph<Node, Link> getResult() {
-		return this.graph;
+	private void insertLinks(int i, int degreeSum, Node newNode, int newDegree) {
+		for (int j = 0; j < newDegree; j++) {
+			int index = (int) (Math.random() * graph.getVertexCount());
+			Node node = graph.getVertices().toArray(Node[]::new)[index];
+
+			double probability2 = graph.degree(node) / degreeSum;
+
+			if (random.nextDouble() >= probability2) {
+				int id = Integer.parseInt(node.getId());
+				Link link = new Link(String.format("%03d%s%03d", i, LINE, id));
+				graph.addEdge(link, node, newNode);
+			}
+
+			Link[] duplicates = graph.findEdgeSet(newNode, node).toArray(Link[]::new);
+
+			if (duplicates.length > 1) {
+				Link duplicate = duplicates[1];
+				graph.removeEdge(duplicate);
+			}
+		}
+	}
+
+	private void insertNewNodes(int nodeCount, int erNodeCount) {
+		for (int i = erNodeCount; i < nodeCount; i++) {
+			ToIntFunction<Node> function = node -> graph.degree(node);
+			int degreeSum = graph.getVertices().stream().mapToInt(function).sum();
+
+			Node newNode = new Node(String.format("%03d", i));
+			int maxdDegree = graph.getVertices().stream().mapToInt(function).max().getAsInt();
+			int newDegree = (int) Math.round(Math.sqrt(maxdDegree));
+
+			insertLinks(i, degreeSum, newNode, newDegree);
+		}
 	}
 
 }

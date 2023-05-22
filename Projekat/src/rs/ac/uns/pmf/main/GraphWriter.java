@@ -40,7 +40,7 @@ public class GraphWriter {
 				return node.getLabel();
 			}
 		});
-		
+
 		try {
 			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(filename)));
 			writer.save(graph, pw);

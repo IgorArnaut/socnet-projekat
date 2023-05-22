@@ -13,10 +13,6 @@ public abstract class Generator {
 
 	protected Graph<Node, Link> graph;
 
-	public abstract void generate(int nodeCount, double probability);
-
-	public Graph<Node, Link> getResult() {
-		return this.graph;
-	}
+	public abstract Graph<Node, Link> generate(int nodeCount, double probability);
 
 }
