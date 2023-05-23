@@ -23,7 +23,7 @@ public class ErdosRenyiGenerator2 extends Generator {
 	private void insertLinks(double probability) {
 		for (int i = 0; i < nodes.length - 1; i++) {
 			for (int j = i + 1; j < nodes.length; j++) {
-				if (random.nextDouble() >= probability) {
+				if (RANDOM.nextDouble() <= probability) {
 					graph.addEdge(links[i][j], nodes[i], nodes[j]);
 					links[i][j] = null;
 				}

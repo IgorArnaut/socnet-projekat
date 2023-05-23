@@ -1,4 +1,4 @@
-package rs.ac.uns.pmf.main;
+package rs.ac.uns.pmf.io;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

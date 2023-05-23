@@ -9,7 +9,7 @@ import rs.ac.uns.pmf.graph.Node;
 public abstract class Generator {
 
 	protected final String LINE = "--";
-	protected final Random random = new Random();
+	protected final Random RANDOM = new Random();
 
 	protected Graph<Node, Link> graph;
 

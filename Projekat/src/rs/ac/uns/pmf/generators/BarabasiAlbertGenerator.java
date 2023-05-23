@@ -25,17 +25,10 @@ public class BarabasiAlbertGenerator extends Generator {
 
 			double probability2 = graph.degree(node) / degreeSum;
 
-			if (random.nextDouble() >= probability2) {
+			if (RANDOM.nextDouble() <= probability2) {
 				int id = Integer.parseInt(node.getId());
 				Link link = new Link(String.format("%03d%s%03d", i, LINE, id));
 				graph.addEdge(link, node, newNode);
-			}
-
-			Link[] duplicates = graph.findEdgeSet(newNode, node).toArray(Link[]::new);
-
-			if (duplicates.length > 1) {
-				Link duplicate = duplicates[1];
-				graph.removeEdge(duplicate);
 			}
 		}
 	}

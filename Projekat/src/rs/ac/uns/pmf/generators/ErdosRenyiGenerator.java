@@ -28,7 +28,7 @@ public class ErdosRenyiGenerator extends Generator {
 		while (iterator.hasNext()) {
 			Link link = iterator.next();
 
-			if (random.nextDouble() >= probability) {
+			if (RANDOM.nextDouble() <= probability) {
 				iterator.remove();
 
 				String[] endpoints = link.getLabel().split(LINE);
