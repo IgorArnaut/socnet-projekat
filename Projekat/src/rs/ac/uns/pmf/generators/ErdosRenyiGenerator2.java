@@ -14,6 +14,7 @@ public class ErdosRenyiGenerator2 extends Generator {
 
 	@Override
 	public Graph<Node, Link> generate(int nodeCount, double probability) {
+		this.graph = new UndirectedSparseGraph<Node, Link>();
 		populateNodes(nodeCount);
 		populateLinks();
 		insertLinks(probability);
@@ -44,7 +45,6 @@ public class ErdosRenyiGenerator2 extends Generator {
 	}
 
 	private void populateNodes(int nodeCount) {
-		this.graph = new UndirectedSparseGraph<Node, Link>();
 		this.nodes = new Node[nodeCount];
 
 		for (int i = 0; i < nodes.length; i++)

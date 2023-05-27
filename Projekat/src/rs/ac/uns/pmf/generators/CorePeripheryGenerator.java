@@ -16,65 +16,66 @@ public class CorePeripheryGenerator {
 	private final String LINE = "--";
 	private final Random RANDOM = new Random();
 
-	private final int CORE_COUNT = 2;
-	private double[] probabilities;
-	private Map<Integer, List<Node>> cores;
+	private final double z = 0.6;
+	private final int COMMUNITY_COUNT = 2;
+	private Map<Integer, List<Node>> communities;
 
 	private Graph<Node, Link> graph;
 
-	public Graph<Node, Link> generate(int nodeCount, double[] probabilities) {
-		this.probabilities = probabilities;
-		populateCores(nodeCount);
-
+	public Graph<Node, Link> generate(int nodeCount, double p, double q) {
 		this.graph = new UndirectedSparseGraph<Node, Link>();
-
-		insertLinks(0, 0);
-		linkCores(0, 1);
-		insertLinks(1, 2);
+		populateCommunities(nodeCount);
+		insertCommunities(p);
+		linkCommunities(q);
 		return graph;
 	}
 
-	private void linkCores(int c, int p) {
-		List<Node> nodes0 = cores.get(c);
-		List<Node> nodes1 = cores.get(c + 1);
+	private void linkCommunities(double q) {
+		List<Node> nodes0 = communities.get(0);
+		List<Node> nodes1 = communities.get(1);
 		
 		for (int i = 0; i < nodes0.size(); i++) {
 			for (int j = 0; j < nodes1.size(); j++) {
 				Link link = new Link(String.format("%03d%s%03d", i, LINE, j));
-				Node first = nodes0.get(i);
-				Node second = nodes1.get(j);
 				
-				if (RANDOM.nextDouble() <= probabilities[p])
+				if (RANDOM.nextDouble() <= q) {
+					Node first = nodes0.get(i);
+					Node second = nodes1.get(j);
 					graph.addEdge(link, first, second);
+				}
 			}
 		}
 	}
 
-	private void insertLinks(int c, int p) {
-		List<Node> nodes = cores.get(c);
-
-		for (int i = 0; i < nodes.size() - 1; i++) {
-			for (int j = i + 1; j < nodes.size(); j++) {
-				Link link = new Link(String.format("%03d%s%03d", i, LINE, j));
-				Node first = nodes.get(i);
-				Node second = nodes.get(j);
-
-				if (RANDOM.nextDouble() <= probabilities[p])
-					graph.addEdge(link, first, second);
+	private void insertCommunities(double p) {
+		for (int i = 0; i < COMMUNITY_COUNT; i++) {
+			List<Node> nodes = communities.get(i);
+			
+			for (int j = 0; j < nodes.size() - 1; j++) {
+				for (int k = j + 1; k < nodes.size(); k++) {
+					Link link = new Link(String.format("%03d%s%03d", j, LINE, k));
+					
+					if (RANDOM.nextDouble() <= p) {
+						Node first = nodes.get(j);
+						Node second = nodes.get(k);
+						graph.addEdge(link, first, second);
+					}
+				}
 			}
 		}
 	}
 
-	private void populateCores(int nodeCount) {
-		this.cores = new HashMap<Integer, List<Node>>();
-
-		for (int i = 0; i < CORE_COUNT; i++)
-			cores.put(i, new ArrayList<Node>());
-
+	private void populateCommunities(int nodeCount) {
+		this.communities = new HashMap<Integer, List<Node>>();
+		
+		for (int i = 0; i < COMMUNITY_COUNT; i++)
+			communities.put(i, new ArrayList<Node>());
+			
 		for (int i = 0; i < nodeCount; i++) {
-			Node node = new Node(String.format("%03d", i));
-			int core = (int) (Math.random() * (CORE_COUNT - 1));
-			cores.get(core).add(node);
+			if (RANDOM.nextDouble() <= z)
+				communities.get(0).add(new Node(String.format("%03d", i)));
+			else
+				communities.get(1).add(new Node(String.format("%03d", i)));
 		}
 	}
 
