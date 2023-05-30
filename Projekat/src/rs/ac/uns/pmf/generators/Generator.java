@@ -3,16 +3,15 @@ package rs.ac.uns.pmf.generators;
 import java.util.Random;
 
 import edu.uci.ics.jung.graph.Graph;
-import rs.ac.uns.pmf.graph.Link;
-import rs.ac.uns.pmf.graph.Node;
+import rs.ac.uns.pmf.graph.Edge;
+import rs.ac.uns.pmf.graph.Vertex;
 
 public abstract class Generator {
 
-	protected final String LINE = "--";
 	protected final Random RANDOM = new Random();
 
-	protected Graph<Node, Link> graph;
+	protected Graph<Vertex, Edge> graph;
 
-	public abstract Graph<Node, Link> generate(int nodeCount, double probability);
+	public abstract Graph<Vertex, Edge> generate(int vertexCount, double probability);
 
 }
