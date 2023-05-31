@@ -2,6 +2,7 @@ package rs.ac.uns.pmf.analysis.plotters;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
 import org.jfree.chart.ChartFactory;
@@ -12,27 +13,29 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import edu.uci.ics.jung.algorithms.scoring.ClosenessCentrality;
 import edu.uci.ics.jung.graph.Graph;
-import rs.ac.uns.pmf.decomposers.Decomposer;
 
 @SuppressWarnings("serial")
 public class ClosenessPlotter<V, E> extends Plotter<V, E> {
 
+	private Map<V, Integer> shellIndices;
 	private ClosenessCentrality<V, E> centrality;
+	private SpearmansCorrelation correlation = new SpearmansCorrelation();
 
-	public ClosenessPlotter(Graph<V, E> graph, Decomposer<V, E> decomposer, SpearmansCorrelation correlation) {
-		super(graph, decomposer, correlation);
+	public ClosenessPlotter(Graph<V, E> graph, Map<V, Integer> shellIndices) {
+		super(graph);
+		this.shellIndices = shellIndices;
 		this.centrality = new ClosenessCentrality<V, E>(graph);
 	}
 
 	@Override
 	protected XYDataset createDataset() {
 		XYSeriesCollection collection = new XYSeriesCollection();
-		XYSeries series = new XYSeries("Degrees");
+		XYSeries series = new XYSeries("Closeness centralities");
 
 		for (V vertex : shellIndices.keySet()) {
-			double shellIndex = shellIndices.get(vertex);
-			double bcValue = centrality.getVertexScore(vertex);
-			series.add(shellIndex, bcValue);
+			double x = shellIndices.get(vertex);
+			double y = centrality.getVertexScore(vertex);
+			series.add(x, y);
 		}
 
 		collection.addSeries(series);
@@ -41,13 +44,18 @@ public class ClosenessPlotter<V, E> extends Plotter<V, E> {
 
 	@Override
 	public void plot() {
-		XYDataset closenessDataset = createDataset();
+		XYDataset dataset = createDataset();
 		JFreeChart chart = ChartFactory.createScatterPlot("Shell indices vs. Closeness centralities", "Shell indices",
-				"Closeness centralities", closenessDataset);
+				"Closeness centralities", dataset);
 		plot(chart);
 	}
 
-	@Override
+	private double calculateCorrelation(List<Double> list1, List<Double> list2) {
+		double[] array1 = list1.stream().mapToDouble(d -> d).toArray();
+		double[] array2 = list2.stream().mapToDouble(d -> d).toArray();
+		return correlation.correlation(array1, array2);
+	}
+
 	public double getSpearmanCorrelation() {
 		List<Double> shellIndexValues = new ArrayList<>();
 		List<Double> centralities = new ArrayList<>();

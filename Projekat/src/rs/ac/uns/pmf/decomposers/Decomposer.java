@@ -12,15 +12,13 @@ public abstract class Decomposer<V, E> {
 
 	protected Map<V, Integer> shellIndices;
 
-	// 0.
 	protected void sortShellIndices() {
-		Map<V, Integer> sorted = new TreeMap<V, Integer>(shellIndices);
+		Map<V, Integer> sorted = new TreeMap<>(shellIndices);
 		shellIndices = sorted;
 	}
 
 	public abstract Map<V, Integer> decompose(Graph<V, E> graph);
 
-	// 0.
 	private List<V> populateVertices(int k) {
 		List<V> vertices = new ArrayList<>();
 		shellIndices.entrySet().forEach(shellIndex -> {
@@ -31,7 +29,6 @@ public abstract class Decomposer<V, E> {
 	}
 
 	public Graph<V, E> getKCore(Graph<V, E> graph, int k) {
-		decompose(graph);
 		List<V> vertices = populateVertices(k);
 		Graph<V, E> core = FilterUtils.createInducedSubgraph(vertices, graph);
 		return core;

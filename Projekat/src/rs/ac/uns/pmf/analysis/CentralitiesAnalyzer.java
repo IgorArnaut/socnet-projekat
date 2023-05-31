@@ -1,6 +1,6 @@
 package rs.ac.uns.pmf.analysis;
 
-import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
+import java.util.Map;
 
 import edu.uci.ics.jung.graph.Graph;
 import rs.ac.uns.pmf.analysis.plotters.BetweennessPlotter;
@@ -11,18 +11,18 @@ import rs.ac.uns.pmf.decomposers.Decomposer;
 
 public class CentralitiesAnalyzer<V, E> implements Analyzer<V, E> {
 
+	private Map<V, Integer> shellIndices;
 	private DegreePlotter<V, E> degreePlotter;
 	private BetweennessPlotter<V, E> betweennessPlotter;
 	private ClosenessPlotter<V, E> closenessPlotter;
 	private EigenvectorPlotter<V, E> eigenvectorPlotter;
 
 	private void init(Graph<V, E> graph, Decomposer<V, E> decomposer) {
-		SpearmansCorrelation correlation = new SpearmansCorrelation();
-
-		this.degreePlotter = new DegreePlotter<>(graph, decomposer, correlation);
-		this.betweennessPlotter = new BetweennessPlotter<>(graph, decomposer, correlation);
-		this.closenessPlotter = new ClosenessPlotter<>(graph, decomposer, correlation);
-		this.eigenvectorPlotter = new EigenvectorPlotter<>(graph, decomposer, correlation);
+		this.shellIndices = decomposer.decompose(graph);
+		this.degreePlotter = new DegreePlotter<>(graph, shellIndices);
+		this.betweennessPlotter = new BetweennessPlotter<>(graph, shellIndices);
+		this.closenessPlotter = new ClosenessPlotter<>(graph, shellIndices);
+		this.eigenvectorPlotter = new EigenvectorPlotter<>(graph, shellIndices);
 	}
 
 	@Override
