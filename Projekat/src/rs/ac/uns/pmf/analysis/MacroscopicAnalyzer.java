@@ -1,5 +1,6 @@
 package rs.ac.uns.pmf.analysis;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,22 +16,22 @@ import rs.ac.uns.pmf.decomposers.Decomposer;
 public class MacroscopicAnalyzer<V, E> implements Analyzer<V, E> {
 
 	private double getDensity(Graph<V, E> graph) {
-		int n = graph.getVertexCount();
-		int l = graph.getEdgeCount();
+		int vertexCount = graph.getVertexCount();
+		int edgeCount = graph.getEdgeCount();
 
-		if (n == 0)
+		if (vertexCount == 0)
 			return 0.0;
 
-		return (2.0 * l) / (n * (n - 1));
+		return 2.0 * edgeCount / (vertexCount * (vertexCount - 1));
 	}
 
 	private int getComponentCount(Graph<V, E> graph) {
-		Set<Set<V>> clusters = new WeakComponentClusterer<V, E>().transform(graph);
+		Set<Set<V>> clusters = new WeakComponentClusterer<V, E>().apply(graph);
 		return clusters.size();
 	}
 
 	private Graph<V, E> getGiantComponent(Graph<V, E> graph) {
-		Set<Set<V>> clusters = new WeakComponentClusterer<V, E>().transform(graph);
+		Set<Set<V>> clusters = new WeakComponentClusterer<V, E>().apply(graph);
 
 		if (clusters.isEmpty())
 			return null;
@@ -45,15 +46,20 @@ public class MacroscopicAnalyzer<V, E> implements Analyzer<V, E> {
 
 		int n = graph.getVertexCount();
 		int l = graph.getEdgeCount();
-		return l > 0 ? (100.0 * n) / l : 0.0;
+
+		if (l == 0)
+			return 0;
+
+		return (100.0 * n) / l;
 	}
 
 	private double getSmallWorldCoefficient(Graph<V, E> graph) {
 		if (graph == null)
 			return 0.0;
 
-		UnweightedShortestPath<V, E> usp = new UnweightedShortestPath<V, E>(graph);
-		List<V> vertices = graph.getVertices().stream().toList();
+		UnweightedShortestPath<V, E> usp = new UnweightedShortestPath<>(graph);
+		List<V> vertices = new ArrayList<>();
+		graph.getVertices().forEach(v -> vertices.add(v));
 		double distanceSum = 0.0;
 
 		for (int j = 0; j < vertices.size() - 1; j++) {
@@ -62,17 +68,36 @@ public class MacroscopicAnalyzer<V, E> implements Analyzer<V, E> {
 		}
 
 		int n = vertices.size();
-		return n - 1 > 0 ? (1.0 * distanceSum) / (n * (n - 1)) : 0.0;
+
+		if (n - 1 == 0)
+			return 0.0;
+
+		return (1.0 * distanceSum) / (n * (n - 1));
 	}
 
 	private double getAvgClusteringCoefficient(Graph<V, E> graph) {
 		int n = graph.getVertexCount();
-		Map<V, Double> clusteringCoefficients = Metrics.clusteringCoefficients(graph);
 
 		if (n == 0)
 			return 0.0;
 
+		Map<V, Double> clusteringCoefficients = Metrics.clusteringCoefficients(graph);
 		return clusteringCoefficients.values().stream().mapToDouble(d -> d).average().getAsDouble();
+	}
+
+	private void analyzeGiantComponent(Graph<V, E> graph) {
+		// TODO Procenat cvorova i linkova u najvecoj komponenti
+		Graph<V, E> giantComponent = getGiantComponent(graph);
+		double percentage = getPercentage(giantComponent);
+		System.out.format("Giant component percentage: %.2f%%\n", percentage);
+
+		// TODO Small world koeficijent najvece komponente
+		double l = getSmallWorldCoefficient(giantComponent);
+		System.out.format("Giant component small world coefficient: %.2f\n", l);
+
+		// TODO Dijametar najvece komponente
+		double diameter = giantComponent != null ? DistanceStatistics.diameter(giantComponent) : 0.0;
+		System.out.format("Giant component diameter: %.2f\n", diameter);
 	}
 
 	@Override
@@ -85,40 +110,29 @@ public class MacroscopicAnalyzer<V, E> implements Analyzer<V, E> {
 			System.out.format("Core: %d\n", i);
 
 			// TODO Broj cvorova
-			int n = core.getVertexCount();
-			System.out.format("Vertex count: %d\n", n);
+			int vertexCount = core.getVertexCount();
+			System.out.format("Core vertex count: %d\n", vertexCount);
 
 			// TODO Broj linkova
-			int l = core.getEdgeCount();
-			System.out.format("Link count: %d\n", l);
+			int edgeCount = core.getEdgeCount();
+			System.out.format("Core link count: %d\n", edgeCount);
 
 			// TODO Gustina
-			double density = getDensity(core);
-			System.out.format("Density: %.2f\n", density);
+			double d = getDensity(core);
+			System.out.format("Core density: %.2f\n", d);
 
 			// TODO Broj povezanih komponenti
 			int componentCount = getComponentCount(core);
-			System.out.format("Component count: %d\n", componentCount);
+			System.out.format("Core component count: %d\n", componentCount);
 
-			// TODO Procenat cvorova i linkova u najvecoj komponenti
-			Graph<V, E> giantComponent = getGiantComponent(core);
-			double percentage = getPercentage(giantComponent);
-			System.out.format("Percentage: %.2f\n", percentage);
-
-			// TODO Small world koeficijent najvece komponente
-			double swc = getSmallWorldCoefficient(giantComponent);
-
-			System.out.format("Small world coefficient: %.2f\n", swc);
-			// TODO Dijametar najvece komponente
-			double diameter = giantComponent != null ? DistanceStatistics.diameter(giantComponent) : 0.0;
-			System.out.format("Giant component diameter: %.2f\n", diameter);
-
+			analyzeGiantComponent(core);
+			
 			// TODO Prosecan koeficijent klasterisanja
 			double avgClusteringCoefficient = getAvgClusteringCoefficient(core);
-			System.out.format("Average clustering coefficient: %.2f\n", avgClusteringCoefficient);
+			System.out.format("Core average clustering coefficient: %.2f\n", avgClusteringCoefficient);
 
-			System.out.println();
 			i++;
+			System.out.println();
 		} while (core.getVertexCount() > 0);
 	}
 
