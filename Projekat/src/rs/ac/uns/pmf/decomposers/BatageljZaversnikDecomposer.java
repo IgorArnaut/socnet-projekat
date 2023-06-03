@@ -3,13 +3,11 @@ package rs.ac.uns.pmf.decomposers;
 import java.util.Map;
 
 import edu.uci.ics.jung.graph.Graph;
-import rs.ac.uns.pmf.graph.Edge;
-import rs.ac.uns.pmf.graph.Vertex;
 
-public class BatageljZaversnikDecomposer extends Decomposer {
+public class BatageljZaversnikDecomposer<V, E> extends Decomposer<V, E> {
 
 	@Override
-	public Map<Vertex, Integer> decompose(Graph<Vertex, Edge> graph) {
+	public Map<V, Integer> decompose(Graph<V, E> graph) {
 		sortShellIndices();
 		return shellIndices;
 	}

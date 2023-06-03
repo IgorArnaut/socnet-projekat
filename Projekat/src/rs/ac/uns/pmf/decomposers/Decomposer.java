@@ -7,22 +7,20 @@ import java.util.TreeMap;
 
 import edu.uci.ics.jung.algorithms.filters.FilterUtils;
 import edu.uci.ics.jung.graph.Graph;
-import rs.ac.uns.pmf.graph.Edge;
-import rs.ac.uns.pmf.graph.Vertex;
 
-public abstract class Decomposer {
+public abstract class Decomposer<V, E> {
 
-	protected Map<Vertex, Integer> shellIndices;
+	protected Map<V, Integer> shellIndices;
 
 	protected void sortShellIndices() {
-		Map<Vertex, Integer> sorted = new TreeMap<>(shellIndices);
+		Map<V, Integer> sorted = new TreeMap<>(shellIndices);
 		shellIndices = sorted;
 	}
 
-	public abstract Map<Vertex, Integer> decompose(Graph<Vertex, Edge> graph);
+	public abstract Map<V, Integer> decompose(Graph<V, E> graph);
 
-	private List<Vertex> populateVertices(int k) {
-		List<Vertex> vertices = new ArrayList<>();
+	private List<V> populateVertices(int k) {
+		List<V> vertices = new ArrayList<>();
 		shellIndices.entrySet().forEach(shellIndex -> {
 			if (shellIndex.getValue() > k)
 				vertices.add(shellIndex.getKey());
@@ -30,9 +28,9 @@ public abstract class Decomposer {
 		return vertices;
 	}
 
-	public Graph<Vertex, Edge> getKCore(Graph<Vertex, Edge> graph, int k) {
-		List<Vertex> vertices = populateVertices(k);
-		Graph<Vertex, Edge> core = FilterUtils.createInducedSubgraph(vertices, graph);
+	public Graph<V, E> getKCore(Graph<V, E> graph, int k) {
+		List<V> vertices = populateVertices(k);
+		Graph<V, E> core = FilterUtils.createInducedSubgraph(vertices, graph);
 		return core;
 	}
 
