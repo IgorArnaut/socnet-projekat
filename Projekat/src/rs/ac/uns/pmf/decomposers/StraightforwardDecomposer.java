@@ -11,22 +11,26 @@ import edu.uci.ics.jung.graph.util.Pair;
 
 public class StraightforwardDecomposer<V, E> extends Decomposer<V, E> {
 
+	// 1.
 	private void insertPair(Graph<V, E> source, Graph<V, E> target, E edge) {
 		Pair<V> pair = source.getEndpoints(edge);
 		target.addEdge(edge, pair);
 	}
 
+	// 2.
 	private Graph<V, E> copyGraph(Graph<V, E> graph) {
 		Graph<V, E> copy = new UndirectedSparseGraph<>();
 		graph.getEdges().forEach(edge -> insertPair(graph, copy, edge));
 		return copy;
 	}
 
+	// 3.
 	private int getMaxDegree(Graph<V, E> graph) {
 		ToIntFunction<V> function = vertex -> graph.degree(vertex);
 		return graph.getVertices().stream().mapToInt(function).max().getAsInt();
 	}
 
+	// 4.
 	private boolean degreeExists(Graph<V, E> copy, int i) {
 		Predicate<V> predicate = vertex -> copy.degree(vertex) == i;
 		return copy.getVertices().stream().anyMatch(predicate);
@@ -35,8 +39,12 @@ public class StraightforwardDecomposer<V, E> extends Decomposer<V, E> {
 	@Override
 	public Map<V, Integer> decompose(Graph<V, E> graph) {
 		this.shellIndices = new LinkedHashMap<>();
+
+		// 2.
 		Graph<V, E> copy = copyGraph(graph);
 		Graph<V, E> temp = null;
+
+		// 3.
 		int maxDegree = getMaxDegree(copy);
 
 		for (int i = 0; i < maxDegree; i++) {
@@ -57,6 +65,7 @@ public class StraightforwardDecomposer<V, E> extends Decomposer<V, E> {
 				}
 
 				copy = temp;
+				// 4.
 			} while (degreeExists(copy, i));
 		}
 

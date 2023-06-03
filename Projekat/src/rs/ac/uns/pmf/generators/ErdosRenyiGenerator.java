@@ -15,6 +15,7 @@ public class ErdosRenyiGenerator extends Generator {
 	private List<Edge> edges;
 	private List<Pair<Vertex>> pairs;
 
+	// 1.
 	private void populateVertices(int vertexCount) {
 		this.vertices = new ArrayList<>();
 
@@ -24,6 +25,7 @@ public class ErdosRenyiGenerator extends Generator {
 		}
 	}
 
+	// 2.
 	private void populateEdges() {
 		this.edges = new ArrayList<>();
 		this.pairs = new ArrayList<>();
@@ -32,21 +34,25 @@ public class ErdosRenyiGenerator extends Generator {
 			for (int j = i + 1; j < vertices.size(); j++) {
 				Edge edge = new Edge();
 				edges.add(edge);
+
 				Pair<Vertex> pair = new Pair<>(vertices.get(i), vertices.get(j));
 				pairs.add(pair);
 			}
 		}
 	}
 
+	// 3.
 	private void insertEdge(double probability, Edge edge, Pair<Vertex> pair) {
 		if (RANDOM.nextDouble() <= probability)
 			graph.addEdge(edge, pair);
 	}
 
+	// 4.
 	private void insertEdges(double probability) {
 		for (int i = 0; i < edges.size(); i++) {
 			Edge edge = edges.get(i);
 			Pair<Vertex> pair = pairs.get(i);
+			// 3.
 			insertEdge(probability, edge, pair);
 		}
 	}
@@ -54,8 +60,11 @@ public class ErdosRenyiGenerator extends Generator {
 	@Override
 	public Graph<Vertex, Edge> generate(int nodeCount, double probability) {
 		this.graph = new UndirectedSparseGraph<>();
+		// 1.
 		populateVertices(nodeCount);
+		// 2.
 		populateEdges();
+		// 4.
 		insertEdges(probability);
 		return graph;
 	}

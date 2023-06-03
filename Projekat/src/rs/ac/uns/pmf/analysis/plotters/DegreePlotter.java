@@ -2,7 +2,6 @@ package rs.ac.uns.pmf.analysis.plotters;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
 import org.jfree.chart.ChartFactory;
@@ -12,16 +11,13 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import edu.uci.ics.jung.graph.Graph;
+import rs.ac.uns.pmf.decomposers.Decomposer;
 
 @SuppressWarnings("serial")
 public class DegreePlotter<V, E> extends Plotter<V, E> {
 
-	private Map<V, Integer> shellIndices;
-	private SpearmansCorrelation correlation = new SpearmansCorrelation();
-
-	public DegreePlotter(Graph<V, E> graph, Map<V, Integer> shellIndices) {
-		super(graph);
-		this.shellIndices = shellIndices;
+	public DegreePlotter(Graph<V, E> graph, Decomposer<V, E> decomposer, SpearmansCorrelation correlation) {
+		super(graph, decomposer, correlation);
 	}
 
 	@Override
@@ -30,9 +26,9 @@ public class DegreePlotter<V, E> extends Plotter<V, E> {
 		XYSeries series = new XYSeries("Degrees");
 
 		for (V vertex : shellIndices.keySet()) {
-			double x = shellIndices.get(vertex);
-			double y = graph.degree(vertex);
-			series.add(x, y);
+			double shellIndex = shellIndices.get(vertex);
+			double degree = graph.degree(vertex);
+			series.add(shellIndex, degree);
 		}
 
 		collection.addSeries(series);
@@ -41,18 +37,13 @@ public class DegreePlotter<V, E> extends Plotter<V, E> {
 
 	@Override
 	public void plot() {
-		XYDataset dataset = createDataset();
+		XYDataset degreeDataset = createDataset();
 		JFreeChart chart = ChartFactory.createScatterPlot("Shell indices vs. Degrees", "Shell indices", "Degrees",
-				dataset);
+				degreeDataset);
 		plot(chart);
 	}
 
-	private double calculateCorrelation(List<Double> list1, List<Double> list2) {
-		double[] array1 = list1.stream().mapToDouble(d -> d).toArray();
-		double[] array2 = list2.stream().mapToDouble(d -> d).toArray();
-		return correlation.correlation(array1, array2);
-	}
-
+	@Override
 	public double getSpearmanCorrelation() {
 		List<Double> shellIndexValues = new ArrayList<>();
 		List<Double> degrees = new ArrayList<>();
