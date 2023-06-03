@@ -30,10 +30,10 @@ public class CorePeripheryGenerator {
 
 	// 2.
 	private void populateCommunities(int vertexCount, double r) {
-		this.communities = new HashMap<>();
+		this.communities = new HashMap<Integer, List<Vertex>>();
 
 		for (int i = 0; i < COMMUNITY_COUNT; i++)
-			communities.put(i, new ArrayList<>());
+			communities.put(i, new ArrayList<Vertex>());
 
 		for (int i = 0; i < vertexCount; i++)
 			insertToCommunity(i, r);
@@ -79,7 +79,7 @@ public class CorePeripheryGenerator {
 	}
 
 	public Graph<Vertex, Edge> generate(int vertexCount, double p, double q, double r) {
-		this.graph = new UndirectedSparseGraph<>();
+		this.graph = new UndirectedSparseGraph<Vertex, Edge>();
 		// 2.
 		populateCommunities(vertexCount, r);
 		// 4.

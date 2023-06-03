@@ -1,8 +1,8 @@
 package rs.ac.uns.pmf.main;
 
 import edu.uci.ics.jung.graph.Graph;
-import rs.ac.uns.pmf.analysis.Analyzer;
-import rs.ac.uns.pmf.analysis.CentralitiesAnalyzer;
+import edu.uci.ics.jung.io.GraphIOException;
+import rs.ac.uns.pmf.analysis.MacroscopicAnalyzer;
 import rs.ac.uns.pmf.decomposers.Decomposer;
 import rs.ac.uns.pmf.decomposers.StraightforwardDecomposer;
 import rs.ac.uns.pmf.graph.Edge;
@@ -13,10 +13,15 @@ public class Main {
 
 	public static void main(String[] args) {
 		Graph<Vertex, Edge> graph;
-		graph = GraphReader.readGraphml("src/graph3.graphml");
-		Decomposer<Vertex, Edge> decomposer = new StraightforwardDecomposer<Vertex, Edge>();
-		Analyzer<Vertex, Edge> analyzer = new CentralitiesAnalyzer<Vertex, Edge>();
-		analyzer.analyze(graph, decomposer);
+
+		try {
+			graph = GraphReader.readGraphml("src/graph1.graphml");
+			Decomposer<Vertex, Edge> decomposer = new StraightforwardDecomposer<Vertex, Edge>();
+			MacroscopicAnalyzer<Vertex, Edge> analyzer = new MacroscopicAnalyzer<Vertex, Edge>();
+			analyzer.analyze(graph, decomposer);
+		} catch (GraphIOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -12,7 +12,7 @@ public class ErdosRenyiGenerator2 extends Generator {
 
 	@Override
 	public Graph<Vertex, Edge> generate(int vertexCount, double probability) {
-		this.graph = new UndirectedSparseGraph<>();
+		this.graph = new UndirectedSparseGraph<Vertex, Edge>();
 		// 1.
 		populateVertices(vertexCount);
 		populateEdges();

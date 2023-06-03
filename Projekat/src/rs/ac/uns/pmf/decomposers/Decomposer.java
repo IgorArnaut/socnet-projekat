@@ -22,7 +22,7 @@ public abstract class Decomposer<V, E> {
 
 	// 0.
 	private List<V> populateVertices(int k) {
-		List<V> vertices = new ArrayList<>();
+		List<V> vertices = new ArrayList<V>();
 		shellIndices.entrySet().forEach(shellIndex -> {
 			if (shellIndex.getValue() > k)
 				vertices.add(shellIndex.getKey());

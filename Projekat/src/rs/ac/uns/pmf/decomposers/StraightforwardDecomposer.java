@@ -19,7 +19,7 @@ public class StraightforwardDecomposer<V, E> extends Decomposer<V, E> {
 
 	// 2.
 	private Graph<V, E> copyGraph(Graph<V, E> graph) {
-		Graph<V, E> copy = new UndirectedSparseGraph<>();
+		Graph<V, E> copy = new UndirectedSparseGraph<V, E>();
 		graph.getEdges().forEach(edge -> insertPair(graph, copy, edge));
 		return copy;
 	}
@@ -38,7 +38,7 @@ public class StraightforwardDecomposer<V, E> extends Decomposer<V, E> {
 
 	@Override
 	public Map<V, Integer> decompose(Graph<V, E> graph) {
-		this.shellIndices = new LinkedHashMap<>();
+		this.shellIndices = new LinkedHashMap<V, Integer>();
 
 		// 2.
 		Graph<V, E> copy = copyGraph(graph);
@@ -49,7 +49,7 @@ public class StraightforwardDecomposer<V, E> extends Decomposer<V, E> {
 
 		for (int i = 0; i < maxDegree; i++) {
 			do {
-				temp = new UndirectedSparseGraph<>();
+				temp = new UndirectedSparseGraph<V, E>();
 
 				for (E edge : copy.getEdges()) {
 					Pair<V> pair = copy.getEndpoints(edge);
