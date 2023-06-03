@@ -15,11 +15,11 @@ public class Main {
 	public static void main(String[] args) {
 		Graph<Vertex, Edge> graph;
 		graph = GraphReader.readGraphml("src/graph1.graphml");
-		Decomposer<Vertex, Edge> decomposer = new StraightforwardDecomposer<Vertex, Edge>();
-		Analyzer<Vertex, Edge> macroscopic = new MacroscopicAnalyzer<Vertex, Edge>();
-		Analyzer<Vertex, Edge> centralities = new CentralitiesAnalyzer<Vertex, Edge>();
-		macroscopic.analyze(graph, decomposer);
-		centralities.analyze(graph, decomposer);
+		Decomposer decomposer = new StraightforwardDecomposer();
+		Analyzer macroscopic = new MacroscopicAnalyzer();
+		Analyzer centralities = new CentralitiesAnalyzer();
+		macroscopic.analyze(graph, decomposer, "graph1");
+		centralities.analyze(graph, decomposer, "graph1");
 	}
 
 }
