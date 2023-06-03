@@ -2,7 +2,7 @@
     <key attr.name="label" attr.type="string" for="node" id="label"/>
     <key attr.name="Edge Label" attr.type="string" for="edge" id="edgelabel"/>
     <key attr.name="weight" attr.type="double" for="edge" id="weight"/>
-    <graph edgedefault="undirected">
+    <graph edgedefault="directed">
         <node id="1210">
             <data key="label">1210</data>
         </node>
