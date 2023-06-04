@@ -8,75 +8,73 @@ import java.util.Random;
 
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
-import rs.ac.uns.pmf.graph.Link;
-import rs.ac.uns.pmf.graph.Node;
+import edu.uci.ics.jung.graph.util.Pair;
+import rs.ac.uns.pmf.graph.Edge;
+import rs.ac.uns.pmf.graph.Vertex;
 
 public class CorePeripheryGenerator {
 
-	private final String LINE = "--";
 	private final Random RANDOM = new Random();
 
-	private final double z = 0.6;
 	private final int COMMUNITY_COUNT = 2;
-	private Map<Integer, List<Node>> communities;
+	private Map<Integer, List<Vertex>> communities;
 
-	private Graph<Node, Link> graph;
+	private Graph<Vertex, Edge> graph;
 
-	public Graph<Node, Link> generate(int nodeCount, double p, double q) {
-		this.graph = new UndirectedSparseGraph<Node, Link>();
-		populateCommunities(nodeCount);
+	private void populateCommunities(int vertexCount) {
+		this.communities = new HashMap<>();
+
+		for (int i = 0; i < COMMUNITY_COUNT; i++)
+			communities.put(i, new ArrayList<>());
+
+		for (int i = 0; i < vertexCount; i++) {
+			if ((int) (Math.random() * 2) == 1)
+				communities.get(0).add(new Vertex(String.format("%03d", i)));
+			else
+				communities.get(1).add(new Vertex(String.format("%03d", i)));
+		}
+	}
+
+	private void insertEdge(double p, Edge edge, Pair<Vertex> pair) {
+		if (RANDOM.nextDouble() <= p)
+			graph.addEdge(edge, pair);
+	}
+
+	private void insertCommunities(double probability) {
+		for (int i = 0; i < COMMUNITY_COUNT; i++) {
+			List<Vertex> vertices = communities.get(i);
+
+			for (int j = 0; j < vertices.size() - 1; j++) {
+				for (int k = j + 1; k < vertices.size(); k++) {
+					Edge edge = new Edge();
+					Vertex first = vertices.get(j);
+					Vertex second = vertices.get(k);
+					Pair<Vertex> pair = new Pair<>(first, second);
+					insertEdge(probability, edge, pair);
+				}
+			}
+		}
+	}
+
+	private void linkCommunities(double probability) {
+		List<Vertex> xs = communities.get(0);
+		List<Vertex> ys = communities.get(1);
+
+		xs.forEach(x -> {
+			ys.forEach(y -> {
+				Edge edge = new Edge();
+				Pair<Vertex> pair = new Pair<>(x, y);
+				insertEdge(probability, edge, pair);
+			});
+		});
+	}
+
+	public Graph<Vertex, Edge> generate(int vertexCount, double p, double q) {
+		this.graph = new UndirectedSparseGraph<>();
+		populateCommunities(vertexCount);
 		insertCommunities(p);
 		linkCommunities(q);
 		return graph;
-	}
-
-	private void linkCommunities(double q) {
-		List<Node> nodes0 = communities.get(0);
-		List<Node> nodes1 = communities.get(1);
-		
-		for (int i = 0; i < nodes0.size(); i++) {
-			for (int j = 0; j < nodes1.size(); j++) {
-				Link link = new Link(String.format("%03d%s%03d", i, LINE, j));
-				
-				if (RANDOM.nextDouble() <= q) {
-					Node first = nodes0.get(i);
-					Node second = nodes1.get(j);
-					graph.addEdge(link, first, second);
-				}
-			}
-		}
-	}
-
-	private void insertCommunities(double p) {
-		for (int i = 0; i < COMMUNITY_COUNT; i++) {
-			List<Node> nodes = communities.get(i);
-			
-			for (int j = 0; j < nodes.size() - 1; j++) {
-				for (int k = j + 1; k < nodes.size(); k++) {
-					Link link = new Link(String.format("%03d%s%03d", j, LINE, k));
-					
-					if (RANDOM.nextDouble() <= p) {
-						Node first = nodes.get(j);
-						Node second = nodes.get(k);
-						graph.addEdge(link, first, second);
-					}
-				}
-			}
-		}
-	}
-
-	private void populateCommunities(int nodeCount) {
-		this.communities = new HashMap<Integer, List<Node>>();
-		
-		for (int i = 0; i < COMMUNITY_COUNT; i++)
-			communities.put(i, new ArrayList<Node>());
-			
-		for (int i = 0; i < nodeCount; i++) {
-			if (RANDOM.nextDouble() <= z)
-				communities.get(0).add(new Node(String.format("%03d", i)));
-			else
-				communities.get(1).add(new Node(String.format("%03d", i)));
-		}
 	}
 
 }

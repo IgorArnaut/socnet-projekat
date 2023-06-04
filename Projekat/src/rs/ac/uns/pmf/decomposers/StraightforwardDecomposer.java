@@ -1,72 +1,60 @@
 package rs.ac.uns.pmf.decomposers;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import edu.uci.ics.jung.graph.util.Pair;
-import rs.ac.uns.pmf.graph.Link;
-import rs.ac.uns.pmf.graph.Node;
+import rs.ac.uns.pmf.graph.Edge;
+import rs.ac.uns.pmf.graph.Vertex;
 
 public class StraightforwardDecomposer extends Decomposer {
 
-	private void insertPair(Graph<Node, Link> source, Graph<Node, Link> target, Link link) {
-		Pair<Node> pair = source.getEndpoints(link);
+	private void insertPair(Graph<Vertex, Edge> source, Graph<Vertex, Edge> target, Edge link) {
+		Pair<Vertex> pair = source.getEndpoints(link);
 		target.addEdge(link, pair);
 	}
 
-	private Graph<Node, Link> copyGraph(Graph<Node, Link> graph) {
-		Graph<Node, Link> copy = new UndirectedSparseGraph<Node, Link>();
-		Iterator<Link> iterator = graph.getEdges().iterator();
-
-		while (iterator.hasNext()) {
-			Link link = iterator.next();
-			insertPair(graph, copy, link);
-		}
-
+	private Graph<Vertex, Edge> copyGraph(Graph<Vertex, Edge> graph) {
+		Graph<Vertex, Edge> copy = new UndirectedSparseGraph<>();
+		graph.getEdges().forEach(e -> insertPair(graph, copy, e));
 		return copy;
 	}
 
-	private int getMaxDegree(Graph<Node, Link> graph) {
-		ToIntFunction<Node> function = node -> graph.degree(node);
+	private int getMaxDegree(Graph<Vertex, Edge> graph) {
+		ToIntFunction<Vertex> function = v -> graph.degree(v);
 		return graph.getVertices().stream().mapToInt(function).max().getAsInt();
 	}
 
-	private boolean degreeExists(Graph<Node, Link> copy, int i) {
-		for (Node n : copy.getVertices()) {
-			if (copy.degree(n) == i)
-				return true;
-		}
-
-		return false;
+	private boolean degreeExists(Graph<Vertex, Edge> copy, int i) {
+		Predicate<Vertex> predicate = v -> copy.degree(v) == i;
+		return copy.getVertices().stream().anyMatch(predicate);
 	}
 
 	@Override
-	public Map<Node, Integer> decompose(Graph<Node, Link> graph) {
-		this.shellIndices = new LinkedHashMap<Node, Integer>();
+	public Map<Vertex, Integer> decompose(Graph<Vertex, Edge> graph) {
+		this.shellIndices = new LinkedHashMap<>();
 
-		Graph<Node, Link> copy = copyGraph(graph);
-		Graph<Node, Link> temp = null;
+		Graph<Vertex, Edge> copy = copyGraph(graph);
+		Graph<Vertex, Edge> temp = null;
 
 		int maxDegree = getMaxDegree(copy);
 
 		for (int i = 0; i < maxDegree; i++) {
 			do {
-				temp = new UndirectedSparseGraph<Node, Link>();
+				temp = new UndirectedSparseGraph<>();
 
-				Iterator<Link> iterator = copy.getEdges().iterator();
+				for (Edge edge : copy.getEdges()) {
+					Pair<Vertex> pair = copy.getEndpoints(edge);
+					Vertex first = pair.getFirst();
+					Vertex second = pair.getSecond();
+					boolean inCore = copy.degree(first) > i && copy.degree(second) > i;
 
-				while (iterator.hasNext()) {
-					Link link = iterator.next();
-					Pair<Node> pair = copy.getEndpoints(link);
-					Node first = pair.getFirst();
-					Node second = pair.getSecond();
-
-					if (copy.degree(first) > i && copy.degree(second) > i) {
-						temp.addEdge(link, pair);
+					if (inCore) {
+						temp.addEdge(edge, pair);
 						shellIndices.put(first, i);
 						shellIndices.put(second, i);
 					}

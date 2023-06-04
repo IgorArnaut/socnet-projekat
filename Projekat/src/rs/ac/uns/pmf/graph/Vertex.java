@@ -1,10 +1,10 @@
 package rs.ac.uns.pmf.graph;
 
-public class Node implements Comparable<Node> {
+public class Vertex {
 
 	private String id;
 
-	public Node(String id) {
+	public Vertex(String id) {
 		this.id = id;
 	}
 
@@ -15,11 +15,6 @@ public class Node implements Comparable<Node> {
 	@Override
 	public String toString() {
 		return this.id;
-	}
-
-	@Override
-	public int compareTo(Node other) {
-		return this.id.compareToIgnoreCase(other.id);
 	}
 
 }

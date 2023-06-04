@@ -1,51 +1,30 @@
 package rs.ac.uns.pmf.decomposers;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+import java.util.TreeMap;
+import java.util.function.Predicate;
 
+import edu.uci.ics.jung.algorithms.filters.FilterUtils;
 import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.UndirectedSparseGraph;
-import edu.uci.ics.jung.graph.util.Pair;
-import rs.ac.uns.pmf.graph.Link;
-import rs.ac.uns.pmf.graph.Node;
+import rs.ac.uns.pmf.graph.Edge;
+import rs.ac.uns.pmf.graph.Vertex;
 
 public abstract class Decomposer {
 
-	protected Map<Node, Integer> shellIndices;
+	protected Map<Vertex, Integer> shellIndices;
 
 	protected void sortShellIndices() {
-		Comparator<Entry<Node, Integer>> comparator = Map.Entry.comparingByValue();
-		Collector<Entry<Node, Integer>, ?, LinkedHashMap<Node, Integer>> collector = Collectors.toMap(Map.Entry::getKey,
-				Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new);
-		shellIndices = shellIndices.entrySet().stream().sorted(comparator).collect(collector);
+		shellIndices = new TreeMap<>(shellIndices);
 	}
 
-	public abstract Map<Node, Integer> decompose(Graph<Node, Link> graph);
+	public abstract Map<Vertex, Integer> decompose(Graph<Vertex, Edge> graph);
 
-	public Graph<Node, Link> getKCore(Graph<Node, Link> graph, int k) {
+	public Graph<Vertex, Edge> getKCore(Graph<Vertex, Edge> graph, int k) {
 		decompose(graph);
-		Graph<Node, Link> core = new UndirectedSparseGraph<Node, Link>();
-		Iterator<Link> iterator = graph.getEdges().iterator();
-
-		while (iterator.hasNext()) {
-			Link link = iterator.next();
-
-			Pair<Node> pair = graph.getEndpoints(link);
-			Node first = pair.getFirst();
-			Node second = pair.getSecond();
-
-			if (shellIndices.containsKey(first) && shellIndices.containsKey(second)) {
-				if (shellIndices.get(first) >= k && shellIndices.get(pair.getSecond()) >= k)
-					core.addEdge(link, pair);
-			}
-		}
-
-		return core;
+		Predicate<Vertex> predicate = v -> shellIndices.get(v) > k;
+		List<Vertex> vertices = shellIndices.keySet().stream().filter(predicate).toList();
+		return FilterUtils.createInducedSubgraph(vertices, graph);
 	}
 
 }

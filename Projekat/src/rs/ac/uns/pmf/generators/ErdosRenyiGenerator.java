@@ -1,60 +1,57 @@
 package rs.ac.uns.pmf.generators;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
-import rs.ac.uns.pmf.graph.Link;
-import rs.ac.uns.pmf.graph.Node;
+import edu.uci.ics.jung.graph.util.Pair;
+import rs.ac.uns.pmf.graph.Edge;
+import rs.ac.uns.pmf.graph.Vertex;
 
 public class ErdosRenyiGenerator extends Generator {
 
-	private Node[] nodes;
-	private List<Link> links;
+	private Vertex[] vertices;
+	private List<Edge> edges;
+	private List<Pair<Vertex>> pairs;
 
-	@Override
-	public Graph<Node, Link> generate(int nodeCount, double probability) {
-		this.graph = new UndirectedSparseGraph<Node, Link>();
-		populateNodes(nodeCount);
-		populateLinks();
-		insertLinks(probability);
-		return graph;
+	private void populateVertices(int vertexCount) {
+		this.vertices = new Vertex[vertexCount];
+
+		for (int i = 0; i < vertexCount; i++)
+			vertices[i] = new Vertex(String.format("%03d", i));
 	}
 
-	private void insertLinks(double probability) {
-		Iterator<Link> iterator = links.iterator();
+	private void populateEdges() {
+		this.edges = new ArrayList<>();
 
-		while (iterator.hasNext()) {
-			Link link = iterator.next();
-
-			if (RANDOM.nextDouble() <= probability) {
-				iterator.remove();
-
-				String[] endpoints = link.getLabel().split(LINE);
-				Node first = nodes[Integer.parseInt(endpoints[0])];
-				Node second = nodes[Integer.parseInt(endpoints[1])];
-
-				graph.addEdge(link, first, second);
+		for (int i = 0; i < vertices.length - 1; i++) {
+			for (int j = i + 1; j < vertices.length; j++) {
+				edges.add(new Edge());
+				pairs.add(new Pair<>(vertices[i], vertices[j]));
 			}
 		}
 	}
 
-	private void populateLinks() {
-		this.links = new ArrayList<Link>();
-
-		for (int i = 0; i < nodes.length - 1; i++) {
-			for (int j = i + 1; j < nodes.length; j++)
-				links.add(new Link(String.format("%03d%s%03d", i, LINE, j)));
-		}
+	private void insertEdge(Pair<Vertex> pair, Edge edge, double probability) {
+		if (RANDOM.nextDouble() <= probability)
+			graph.addEdge(edge, pair);
 	}
 
-	private void populateNodes(int nodeCount) {
-		this.nodes = new Node[nodeCount];
+	private void insertEdges(double probability) {
+		edges.forEach(e -> {
+			Pair<Vertex> pair = pairs.get(edges.indexOf(e));
+			insertEdge(pair, e, probability);
+		});
+	}
 
-		for (int i = 0; i < nodes.length; i++)
-			nodes[i] = new Node(String.format("%03d", i));
+	@Override
+	public Graph<Vertex, Edge> generate(int vertexCount, double probability) {
+		this.graph = new UndirectedSparseGraph<>();
+		populateVertices(vertexCount);
+		populateEdges();
+		insertEdges(probability);
+		return graph;
 	}
 
 }
