@@ -8,7 +8,6 @@ import java.util.Random;
 
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
-import edu.uci.ics.jung.graph.util.Pair;
 import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
 
@@ -35,9 +34,9 @@ public class CorePeripheryGenerator {
 		}
 	}
 
-	private void insertEdge(double p, Edge edge, Pair<Vertex> pair) {
-		if (RANDOM.nextDouble() <= p)
-			graph.addEdge(edge, pair);
+	private void insertEdge(Edge edge, Vertex source, Vertex target, double probability) {
+		if (RANDOM.nextDouble() <= probability)
+			graph.addEdge(edge, source, target);
 	}
 
 	private void insertCommunities(double probability) {
@@ -46,25 +45,30 @@ public class CorePeripheryGenerator {
 
 			for (int j = 0; j < vertices.size() - 1; j++) {
 				for (int k = j + 1; k < vertices.size(); k++) {
-					Edge edge = new Edge();
-					Vertex first = vertices.get(j);
-					Vertex second = vertices.get(k);
-					Pair<Vertex> pair = new Pair<>(first, second);
-					insertEdge(probability, edge, pair);
+					Vertex source = vertices.get(j);
+					Vertex target = vertices.get(k);
+					
+					String sourceId = "" + source;
+					String targetId = "" + target;
+					
+					Edge edge = new Edge(sourceId, targetId);
+					insertEdge(edge, source, target, probability);
 				}
 			}
 		}
 	}
 
 	private void linkCommunities(double probability) {
-		List<Vertex> xs = communities.get(0);
-		List<Vertex> ys = communities.get(1);
+		List<Vertex> sources = communities.get(0);
+		List<Vertex> targets = communities.get(1);
 
-		xs.forEach(x -> {
-			ys.forEach(y -> {
-				Edge edge = new Edge();
-				Pair<Vertex> pair = new Pair<>(x, y);
-				insertEdge(probability, edge, pair);
+		sources.forEach(source -> {
+			targets.forEach(target -> {				
+				String sourceId = "" + source;
+				String targetId = "" + target;
+				
+				Edge edge = new Edge(sourceId, targetId);
+				insertEdge(edge, source, target, probability);
 			});
 		});
 	}

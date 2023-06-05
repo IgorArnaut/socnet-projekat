@@ -1,6 +1,6 @@
 package rs.ac.uns.pmf.graph;
 
-public class Vertex {
+public class Vertex implements Comparable<Vertex> {
 
 	private String id;
 
@@ -15,6 +15,11 @@ public class Vertex {
 	@Override
 	public String toString() {
 		return this.id;
+	}
+
+	@Override
+	public int compareTo(Vertex other) {
+		return Integer.parseInt(this.id) - Integer.parseInt(other.id);
 	}
 
 }

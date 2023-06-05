@@ -4,26 +4,44 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.SAXException;
+import com.google.common.base.Function;
 
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import edu.uci.ics.jung.io.GraphIOException;
-import edu.uci.ics.jung.io.GraphMLReader;
+import edu.uci.ics.jung.io.graphml.EdgeMetadata;
+import edu.uci.ics.jung.io.graphml.GraphMLReader2;
+import edu.uci.ics.jung.io.graphml.GraphMetadata;
+import edu.uci.ics.jung.io.graphml.HyperEdgeMetadata;
+import edu.uci.ics.jung.io.graphml.NodeMetadata;
 import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
 
 public class GraphReader {
 
-	public static Graph<Vertex, Edge> readGraphml(String file) throws GraphIOException {
-		try {
-			GraphMLReader<UndirectedSparseGraph<Vertex, Edge>, Vertex, Edge> reader = new GraphMLReader<>();
-			UndirectedSparseGraph<Vertex, Edge> graph = new UndirectedSparseGraph<>();
-			reader.load(file, graph);
-			return graph;
-		} catch (IOException | ParserConfigurationException | SAXException e) {
+	public static Graph<Vertex, Edge> readGraphml(String file) {
+		try (BufferedReader br = new BufferedReader(new FileReader(file))){
+			Function<NodeMetadata, Vertex> vt = v -> {
+				return new Vertex(v.getId());
+			};
+			Function<EdgeMetadata, Edge> et = e -> {
+				String source = e.getSource();
+				String target = e.getTarget();
+				return new Edge(source, target);
+			};
+			Function<HyperEdgeMetadata, Edge> het = he -> {
+				String source = he.getEndpoints().get(0).getId();
+				String target = he.getEndpoints().get(1).getId();
+				return new Edge(source, target);
+			};
+			Function<GraphMetadata, Graph<Vertex, Edge>> gt = g -> {
+				return new UndirectedSparseGraph<>();
+			};
+			
+			GraphMLReader2<Graph<Vertex, Edge>, Vertex, Edge> reader = new GraphMLReader2<Graph<Vertex, Edge>, Vertex, Edge>(br, gt, vt, et, het);
+			
+			return reader.readGraph();
+		} catch (IOException | GraphIOException e) {
 			e.printStackTrace();
 			return null;
 		}

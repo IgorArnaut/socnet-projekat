@@ -1,19 +1,13 @@
 package rs.ac.uns.pmf.generators;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
-import edu.uci.ics.jung.graph.util.Pair;
 import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
 
 public class ErdosRenyiGenerator extends Generator {
 
 	private Vertex[] vertices;
-	private List<Edge> edges;
-	private List<Pair<Vertex>> pairs;
 
 	private void populateVertices(int vertexCount) {
 		this.vertices = new Vertex[vertexCount];
@@ -22,34 +16,26 @@ public class ErdosRenyiGenerator extends Generator {
 			vertices[i] = new Vertex(String.format("%03d", i));
 	}
 
-	private void populateEdges() {
-		this.edges = new ArrayList<>();
-
-		for (int i = 0; i < vertices.length - 1; i++) {
-			for (int j = i + 1; j < vertices.length; j++) {
-				edges.add(new Edge());
-				pairs.add(new Pair<>(vertices[i], vertices[j]));
-			}
-		}
-	}
-
-	private void insertEdge(Pair<Vertex> pair, Edge edge, double probability) {
+	private void insertEdge(Edge edge, Vertex source, Vertex target, double probability) {
 		if (RANDOM.nextDouble() <= probability)
-			graph.addEdge(edge, pair);
+			graph.addEdge(edge, source, target);
 	}
 
 	private void insertEdges(double probability) {
-		edges.forEach(e -> {
-			Pair<Vertex> pair = pairs.get(edges.indexOf(e));
-			insertEdge(pair, e, probability);
-		});
+		for (int i = 0; i < vertices.length - 1; i++) {
+			for (int j = i + 1; j < vertices.length; j++) {
+				String sourceId = "" + vertices[i];
+				String targetId = "" + vertices[j];
+				Edge edge = new Edge(sourceId, targetId);
+				insertEdge(edge, vertices[i], vertices[j], probability);
+			}
+		}
 	}
 
 	@Override
 	public Graph<Vertex, Edge> generate(int vertexCount, double probability) {
 		this.graph = new UndirectedSparseGraph<>();
 		populateVertices(vertexCount);
-		populateEdges();
 		insertEdges(probability);
 		return graph;
 	}

@@ -1,7 +1,7 @@
 package rs.ac.uns.pmf.decomposers;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
@@ -36,14 +36,14 @@ public class StraightforwardDecomposer extends Decomposer {
 
 	@Override
 	public Map<Vertex, Integer> decompose(Graph<Vertex, Edge> graph) {
-		this.shellIndices = new LinkedHashMap<>();
+		this.shellIndices = new TreeMap<>();
 
 		Graph<Vertex, Edge> copy = copyGraph(graph);
 		Graph<Vertex, Edge> temp = null;
 
 		int maxDegree = getMaxDegree(copy);
 
-		for (int i = 0; i < maxDegree; i++) {
+		for (int i = 0; i <= maxDegree; i++) {
 			do {
 				temp = new UndirectedSparseGraph<>();
 
@@ -64,7 +64,6 @@ public class StraightforwardDecomposer extends Decomposer {
 			} while (degreeExists(copy, i));
 		}
 
-		sortShellIndices();
 		return shellIndices;
 	}
 

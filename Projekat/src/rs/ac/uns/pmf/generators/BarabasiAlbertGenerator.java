@@ -3,7 +3,6 @@ package rs.ac.uns.pmf.generators;
 import java.util.function.ToIntFunction;
 
 import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.util.Pair;
 import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
 
@@ -14,13 +13,9 @@ public class BarabasiAlbertGenerator extends Generator {
 		return graph.getVertices().stream().mapToInt(function).sum();
 	}
 
-	private int getMaxDegree() {
+	private int getDegree() {
 		ToIntFunction<Vertex> function = v -> graph.degree(v);
-		return graph.getVertices().stream().mapToInt(function).max().getAsInt();
-	}
-
-	private int getNewDegree() {
-		int maxDegree = getMaxDegree();
+		int maxDegree = graph.getVertices().stream().mapToInt(function).max().getAsInt();
 		return (int) Math.round(Math.sqrt(maxDegree));
 	}
 
@@ -29,27 +24,29 @@ public class BarabasiAlbertGenerator extends Generator {
 		return graph.getVertices().toArray(Vertex[]::new)[index];
 	}
 
-	private void insertEdge(Pair<Vertex> pair, Edge edge, double probability) {
+	private void insertEdge(Edge edge, Vertex source, Vertex target, double probability) {
 		if (RANDOM.nextDouble() <= probability)
-			graph.addEdge(edge, pair);
+			graph.addEdge(edge, source, target);
 	}
 
-	private void insertEdges(Vertex newVertex, int i) {
-		int newDegree = getNewDegree();
+	private void insertEdges(Vertex target, int i) {
+		String targetId = "" + target;
+
+		int degree = getDegree();
 		int degreeSum = getDegreeSum();
 
-		for (int j = 0; j < newDegree; j++) {
-			Vertex vertex = randomVertex();
+		for (int j = 0; j < degree; j++) {
+			Vertex source = randomVertex();
+			String sourceId = "" + source;
 
-			Edge edge = new Edge();
-			Pair<Vertex> pair = new Pair<>(newVertex, vertex);
+			Edge edge = new Edge(sourceId, targetId);
 
-			double probability = graph.degree(vertex) / degreeSum;
-			insertEdge(pair, edge, probability);
+			double probability = graph.degree(source) / degreeSum;
+			insertEdge(edge, source, target, probability);
 		}
 	}
 
-	private void insertNewVertices(int erVertexCount, int vertexCount) {
+	private void insertVertices(int erVertexCount, int vertexCount) {
 		for (int i = erVertexCount; i < vertexCount; i++) {
 			Vertex newVertex = new Vertex(String.format("%03d", i));
 			insertEdges(newVertex, i);
@@ -62,7 +59,7 @@ public class BarabasiAlbertGenerator extends Generator {
 		ErdosRenyiGenerator generator = new ErdosRenyiGenerator();
 		this.graph = generator.generate(erVertexCount, probability);
 
-		insertNewVertices(erVertexCount, vertexCount);
+		insertVertices(erVertexCount, vertexCount);
 		return graph;
 	}
 

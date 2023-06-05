@@ -3,9 +3,9 @@ package rs.ac.uns.pmf.decomposers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import edu.uci.ics.jung.graph.Graph;
 import rs.ac.uns.pmf.graph.Edge;
@@ -23,7 +23,8 @@ public class BatageljZaversnikDecomposer extends Decomposer {
 		this.vertices = graph.getVertices().stream().toArray(Vertex[]::new);
 		this.degrees = Arrays.stream(vertices).mapToInt(v -> graph.degree(v)).toArray();
 		this.maxDegree = Arrays.stream(degrees).max().getAsInt();
-		this.verticesPerDegree = new HashMap<>();
+		this.verticesPerDegree = new TreeMap<>();
+		this.shellIndices = new TreeMap<>();
 
 		for (int i = 0; i <= maxDegree; i++)
 			verticesPerDegree.put(i, new ArrayList<>());
@@ -34,19 +35,24 @@ public class BatageljZaversnikDecomposer extends Decomposer {
 		}
 	}
 
+	private boolean isEmpty(List<Vertex> vertices) {
+		if (vertices == null)
+			return true;
+
+		if (vertices.isEmpty())
+			return true;
+
+		return false;
+	}
+
 	private void changeDegree(Vertex neighbor, int i) {
 		int index = Arrays.asList(vertices).indexOf(neighbor);
 		int degree = degrees[index];
 
 		if (degree > i) {
-			if (verticesPerDegree.get(degree) != null) {
-				verticesPerDegree.get(degree).remove(neighbor);
-
-				if (verticesPerDegree.get(degree - 1) != null) {
-					verticesPerDegree.get(degree - 1).add(neighbor);
-					degrees[index] -= 1;
-				}
-			}
+			verticesPerDegree.get(degree).remove(neighbor);
+			verticesPerDegree.get(degree - 1).add(neighbor);
+			degrees[index] -= 1;
 		}
 	}
 
@@ -65,7 +71,7 @@ public class BatageljZaversnikDecomposer extends Decomposer {
 		init(graph);
 
 		for (int i = 0; i <= maxDegree; i++) {
-			if (verticesPerDegree.get(i) != null) {
+			if (!isEmpty(verticesPerDegree.get(i))) {
 				List<Vertex> verticesOfDegree = verticesPerDegree.get(i);
 
 				do {
@@ -75,7 +81,6 @@ public class BatageljZaversnikDecomposer extends Decomposer {
 			}
 		}
 
-		sortShellIndices();
 		return shellIndices;
 	}
 
