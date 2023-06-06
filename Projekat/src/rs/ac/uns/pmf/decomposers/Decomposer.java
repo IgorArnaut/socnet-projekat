@@ -2,6 +2,7 @@ package rs.ac.uns.pmf.decomposers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Predicate;
 
 import edu.uci.ics.jung.algorithms.filters.FilterUtils;
@@ -12,6 +13,10 @@ import rs.ac.uns.pmf.graph.Vertex;
 public abstract class Decomposer {
 
 	protected Map<Vertex, Integer> shellIndices;
+	
+	public Decomposer() {
+		this.shellIndices = new TreeMap<>();
+	}
 
 	public abstract Map<Vertex, Integer> decompose(Graph<Vertex, Edge> graph);
 

@@ -11,7 +11,12 @@ public abstract class Generator {
 	protected final Random RANDOM = new Random();
 
 	protected Graph<Vertex, Edge> graph;
+	
+	protected void insertEdge(Edge edge, Vertex source, Vertex target, double p) {
+		if (RANDOM.nextDouble() <= p)
+			graph.addEdge(edge, source, target);
+	}
 
-	public abstract Graph<Vertex, Edge> generate(int vertexCount, double probability);
+	public abstract Graph<Vertex, Edge> generate();
 
 }

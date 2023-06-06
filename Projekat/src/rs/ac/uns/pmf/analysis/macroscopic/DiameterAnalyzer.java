@@ -1,21 +1,16 @@
-package rs.ac.uns.pmf.analysis;
+package rs.ac.uns.pmf.analysis.macroscopic;
 
 import edu.uci.ics.jung.algorithms.shortestpath.DistanceStatistics;
 import edu.uci.ics.jung.graph.Graph;
+import rs.ac.uns.pmf.analysis.Analyzer;
 import rs.ac.uns.pmf.decomposers.Decomposer;
 import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
 import rs.ac.uns.pmf.utils.GiantComponent;
 
-public class DiameterAnalyzer extends Analyzer {
+public class DiameterAnalyzer implements Analyzer {
 
-	private Decomposer decomposer;
 	private GiantComponent component = new GiantComponent();
-
-	public DiameterAnalyzer(Graph<Vertex, Edge> graph, Decomposer decomposer) {
-		super(graph);
-		this.decomposer = decomposer;
-	}
 
 	private double getDiameter(Graph<Vertex, Edge> graph) {
 		if (graph == null)
@@ -24,9 +19,7 @@ public class DiameterAnalyzer extends Analyzer {
 		return DistanceStatistics.diameter(graph);
 	}
 
-	@Override
-	public void analyze() {
-		rows.add("Core;Giant component diameter");
+	public void analyze(Graph<Vertex, Edge> graph, Decomposer decomposer) {
 		Graph<Vertex, Edge> core = null;
 		int x = 0;
 
@@ -34,8 +27,6 @@ public class DiameterAnalyzer extends Analyzer {
 			core = decomposer.getKCore(graph, x);
 			Graph<Vertex, Edge> giantComponent = component.getGiantComponent(graph);
 			double y = getDiameter(giantComponent);
-			String row = String.format("%d;%.2f", x, y);
-			rows.add(row);
 			x++;
 		} while (core.getVertexCount() > 0);
 	}

@@ -7,36 +7,50 @@ import rs.ac.uns.pmf.graph.Vertex;
 
 public class ErdosRenyiGenerator extends Generator {
 
+	private int n;
+	private double p;
+
 	private Vertex[] vertices;
+	private Edge[][] edges;
+	
+	public ErdosRenyiGenerator(int n, double p) {
+		this.n = n;
+		this.p = p;
+		this.vertices = new Vertex[n];
+		this.edges = new Edge[n][n];
+	}
 
-	private void populateVertices(int vertexCount) {
-		this.vertices = new Vertex[vertexCount];
-
-		for (int i = 0; i < vertexCount; i++)
+	private void populateVertices() {
+		for (int i = 0; i < n; i++)
 			vertices[i] = new Vertex(String.format("%03d", i));
 	}
 
-	private void insertEdge(Edge edge, Vertex source, Vertex target, double probability) {
-		if (RANDOM.nextDouble() <= probability)
-			graph.addEdge(edge, source, target);
-	}
-
-	private void insertEdges(double probability) {
-		for (int i = 0; i < vertices.length - 1; i++) {
-			for (int j = i + 1; j < vertices.length; j++) {
+	private void populateEdges() {
+		for (int i = 0; i < n - 1; i++) {
+			for (int j = 0; j < n; j++) {
 				String sourceId = "" + vertices[i];
 				String targetId = "" + vertices[j];
-				Edge edge = new Edge(sourceId, targetId);
-				insertEdge(edge, vertices[i], vertices[j], probability);
+				edges[i][j] = new Edge(sourceId, targetId);
+			}
+		}
+	}
+
+	private void insertEdges() {
+		for (int i = 0; i < edges.length - 1; i++) {
+			for (int j = i + 1; j < edges.length; j++) {
+				Edge edge = edges[i][j];
+				edges[i][j] = null;
+				insertEdge(edge, vertices[i], vertices[j], p);
 			}
 		}
 	}
 
 	@Override
-	public Graph<Vertex, Edge> generate(int vertexCount, double probability) {
+	public Graph<Vertex, Edge> generate() {
 		this.graph = new UndirectedSparseGraph<>();
-		populateVertices(vertexCount);
-		insertEdges(probability);
+		populateVertices();
+		populateEdges();
+		insertEdges();
 		return graph;
 	}
 

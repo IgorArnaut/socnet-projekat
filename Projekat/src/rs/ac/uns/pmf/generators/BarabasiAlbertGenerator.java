@@ -8,6 +8,14 @@ import rs.ac.uns.pmf.graph.Vertex;
 
 public class BarabasiAlbertGenerator extends Generator {
 
+	private int n;
+	private double p;
+	
+	public BarabasiAlbertGenerator(int n, double p) {
+		this.n = n;
+		this.p = p;
+	}
+	
 	private int getDegreeSum() {
 		ToIntFunction<Vertex> function = v -> graph.degree(v);
 		return graph.getVertices().stream().mapToInt(function).sum();
@@ -24,42 +32,39 @@ public class BarabasiAlbertGenerator extends Generator {
 		return graph.getVertices().toArray(Vertex[]::new)[index];
 	}
 
-	private void insertEdge(Edge edge, Vertex source, Vertex target, double probability) {
-		if (RANDOM.nextDouble() <= probability)
-			graph.addEdge(edge, source, target);
-	}
-
-	private void insertEdges(Vertex target, int i) {
+	private void insertEdges(Vertex target) {
 		String targetId = "" + target;
 
-		int degree = getDegree();
-		int degreeSum = getDegreeSum();
+		int targetD = getDegree();
+		int dSum = getDegreeSum();
 
-		for (int j = 0; j < degree; j++) {
+		for (int j = 0; j < targetD; j++) {
 			Vertex source = randomVertex();
 			String sourceId = "" + source;
 
 			Edge edge = new Edge(sourceId, targetId);
 
-			double probability = graph.degree(source) / degreeSum;
-			insertEdge(edge, source, target, probability);
+			double q = graph.degree(source) / dSum;
+			// double probability = graph.degree(source) / (dSum + targetD); ??
+			insertEdge(edge, source, target, q);
 		}
 	}
 
-	private void insertVertices(int erVertexCount, int vertexCount) {
-		for (int i = erVertexCount; i < vertexCount; i++) {
+	private void insertVertices(int m) {
+		for (int i = m; i < n; i++) {
 			Vertex newVertex = new Vertex(String.format("%03d", i));
-			insertEdges(newVertex, i);
+			insertEdges(newVertex);
 		}
 	}
 
-	public Graph<Vertex, Edge> generate(int vertexCount, double probability) {
-		int erVertexCount = (int) (Math.random() * (vertexCount / 2));
+	@Override
+	public Graph<Vertex, Edge> generate() {
+		int m = (int) (Math.random() * (n / 2));
 
-		ErdosRenyiGenerator generator = new ErdosRenyiGenerator();
-		this.graph = generator.generate(erVertexCount, probability);
+		ErdosRenyiGenerator generator = new ErdosRenyiGenerator(n, p);
+		this.graph = generator.generate();
 
-		insertVertices(erVertexCount, vertexCount);
+		insertVertices(m);
 		return graph;
 	}
 

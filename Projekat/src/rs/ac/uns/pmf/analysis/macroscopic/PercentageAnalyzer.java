@@ -1,20 +1,15 @@
-package rs.ac.uns.pmf.analysis;
+package rs.ac.uns.pmf.analysis.macroscopic;
 
 import edu.uci.ics.jung.graph.Graph;
+import rs.ac.uns.pmf.analysis.Analyzer;
 import rs.ac.uns.pmf.decomposers.Decomposer;
 import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
 import rs.ac.uns.pmf.utils.GiantComponent;
 
-public class PercentageAnalyzer extends Analyzer {
+public class PercentageAnalyzer implements Analyzer {
 
-	private Decomposer decomposer;
 	private GiantComponent component = new GiantComponent();
-
-	public PercentageAnalyzer(Graph<Vertex, Edge> graph, Decomposer decomposer) {
-		super(graph);
-		this.decomposer = decomposer;
-	}
 
 	private double getPercentage(Graph<Vertex, Edge> graph) {
 		if (graph == null)
@@ -30,8 +25,7 @@ public class PercentageAnalyzer extends Analyzer {
 	}
 
 	@Override
-	public void analyze() {
-		rows.add("Core;Giant component node percentage\n");
+	public void analyze(Graph<Vertex, Edge> graph, Decomposer decomposer) {
 		Graph<Vertex, Edge> core = null;
 		int x = 0;
 
@@ -39,8 +33,6 @@ public class PercentageAnalyzer extends Analyzer {
 			core = decomposer.getKCore(graph, x);
 			Graph<Vertex, Edge> giantComponent = component.getGiantComponent(graph);
 			double y = getPercentage(giantComponent);
-			String row = String.format("%d;%.2f\n", x, y);
-			rows.add(row);
 			x++;
 		} while (core.getVertexCount() > 0);
 	}

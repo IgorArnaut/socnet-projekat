@@ -1,21 +1,15 @@
-package rs.ac.uns.pmf.analysis;
+package rs.ac.uns.pmf.analysis.macroscopic;
 
 import java.util.Map;
 
 import edu.uci.ics.jung.algorithms.metrics.Metrics;
 import edu.uci.ics.jung.graph.Graph;
+import rs.ac.uns.pmf.analysis.Analyzer;
 import rs.ac.uns.pmf.decomposers.Decomposer;
 import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
 
-public class ClusteringAnalyzer extends Analyzer {
-
-	private Decomposer decomposer;
-
-	public ClusteringAnalyzer(Graph<Vertex, Edge> graph, Decomposer decomposer) {
-		super(graph);
-		this.decomposer = decomposer;
-	}
+public class ClusteringAnalyzer implements Analyzer {
 
 	private double getAvgClusteringCoefficient(Graph<Vertex, Edge> graph) {
 		int n = graph.getVertexCount();
@@ -27,17 +21,13 @@ public class ClusteringAnalyzer extends Analyzer {
 		return clusteringCoefficients.values().stream().mapToDouble(d -> d).average().getAsDouble();
 	}
 
-	@Override
-	public void analyze() {
-		rows.add("Core;Clustering coefficient");
+	public void analyze(Graph<Vertex, Edge> graph, Decomposer decomposer) {
 		Graph<Vertex, Edge> core = null;
 		int x = 0;
 
 		do {
 			core = decomposer.getKCore(graph, x);
 			double y = getAvgClusteringCoefficient(core);
-			String row = String.format("%d;%.2f", x, y);
-			rows.add(row);
 			x++;
 		} while (core.getVertexCount() > 0);
 	}

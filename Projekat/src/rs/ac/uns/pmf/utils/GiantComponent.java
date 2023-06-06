@@ -10,6 +10,11 @@ import rs.ac.uns.pmf.graph.Vertex;
 
 public class GiantComponent {
 
+	/**
+	 * Finds the giant component in the network.
+	 * @param graph
+	 * @return
+	 */
 	public Graph<Vertex, Edge> getGiantComponent(Graph<Vertex, Edge> graph) {
 		Set<Set<Vertex>> clusters = new WeakComponentClusterer<Vertex, Edge>().apply(graph);
 

@@ -1,24 +1,19 @@
-package rs.ac.uns.pmf.analysis;
+package rs.ac.uns.pmf.analysis.macroscopic;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.uci.ics.jung.algorithms.shortestpath.UnweightedShortestPath;
 import edu.uci.ics.jung.graph.Graph;
+import rs.ac.uns.pmf.analysis.Analyzer;
 import rs.ac.uns.pmf.decomposers.Decomposer;
 import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
 import rs.ac.uns.pmf.utils.GiantComponent;
 
-public class SmallWorldAnalyzer extends Analyzer {
+public class SmallWorldAnalyzer implements Analyzer {
 
-	private Decomposer decomposer;
 	private GiantComponent component = new GiantComponent();
-
-	public SmallWorldAnalyzer(Graph<Vertex, Edge> graph, Decomposer decomposer) {
-		super(graph);
-		this.decomposer = decomposer;
-	}
 
 	private double getSmallWorldCoefficient(Graph<Vertex, Edge> graph) {
 		if (graph == null)
@@ -43,8 +38,7 @@ public class SmallWorldAnalyzer extends Analyzer {
 	}
 
 	@Override
-	public void analyze() {
-		rows.add("Core;Giant component small world coefficient\n");
+	public void analyze(Graph<Vertex, Edge> graph, Decomposer decomposer) {
 		Graph<Vertex, Edge> core = null;
 		int x = 0;
 
@@ -52,8 +46,6 @@ public class SmallWorldAnalyzer extends Analyzer {
 			core = decomposer.getKCore(graph, x);
 			Graph<Vertex, Edge> giantComponent = component.getGiantComponent(graph);
 			double y = getSmallWorldCoefficient(giantComponent);
-			String row = String.format("%d;%.2f\n", x, y);
-			rows.add(row);
 			x++;
 		} while (core.getVertexCount() > 0);
 	}

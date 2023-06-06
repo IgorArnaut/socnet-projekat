@@ -19,6 +19,11 @@ import rs.ac.uns.pmf.graph.Vertex;
 
 public class GraphReader {
 
+	/**
+	 * Reads a graph from the given file.
+	 * @param file
+	 * @return
+	 */
 	public static Graph<Vertex, Edge> readGraphml(String file) {
 		try (BufferedReader br = new BufferedReader(new FileReader(file))){
 			Function<NodeMetadata, Vertex> vt = v -> {
@@ -39,7 +44,6 @@ public class GraphReader {
 			};
 			
 			GraphMLReader2<Graph<Vertex, Edge>, Vertex, Edge> reader = new GraphMLReader2<Graph<Vertex, Edge>, Vertex, Edge>(br, gt, vt, et, het);
-			
 			return reader.readGraph();
 		} catch (IOException | GraphIOException e) {
 			e.printStackTrace();
