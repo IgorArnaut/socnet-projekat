@@ -18,7 +18,7 @@ public class CorePeripheryGenerator extends Generator {
 	private int n;
 	private double p;
 	private double q;
-	
+
 	public CorePeripheryGenerator(int n, double p, double q) {
 		this.n = n;
 		this.p = p;

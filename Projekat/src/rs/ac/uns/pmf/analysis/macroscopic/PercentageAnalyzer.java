@@ -1,7 +1,8 @@
 package rs.ac.uns.pmf.analysis.macroscopic;
 
+import java.util.List;
+
 import edu.uci.ics.jung.graph.Graph;
-import rs.ac.uns.pmf.decomposers.Decomposer;
 import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
 import rs.ac.uns.pmf.utils.GiantComponent;
@@ -24,24 +25,20 @@ public class PercentageAnalyzer extends MacroscopicAnalyzer {
 	}
 
 	@Override
-	public void analyze(Graph<Vertex, Edge> graph, Decomposer decomposer) {
-		Graph<Vertex, Edge> core = null;
-		int x = 0;
-
-		do {
-			core = decomposer.getKCore(graph, x);
-			Graph<Vertex, Edge> giantComponent = component.getGiantComponent(graph);
+	public void analyze(List<Graph<Vertex, Edge>> cores) {
+		for (int x = 0; x < cores.size(); x++) {
+			Graph<Vertex, Edge> giantComponent = component.getGiantComponent(cores.get(x));
 			double y = getPercentage(giantComponent);
 			results.put(x, y);
-			x++;
-		} while (core.getVertexCount() > 0);
+		}
 	}
-	
+
 	@Override
 	public void report(String folder) {
 		String file = "giant-component-percentages.csv";
 		String header = "Core;Giant component percentage";
-		exportToCSV(folder, file, header);
+		exporter.setData(results);
+		exporter.exportToCSV(folder, file, header);
 	}
 
 }

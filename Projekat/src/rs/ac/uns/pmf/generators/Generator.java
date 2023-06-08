@@ -9,7 +9,7 @@ import rs.ac.uns.pmf.graph.Vertex;
 public abstract class Generator {
 
 	protected final Random RANDOM = new Random();
-	
+
 	protected int id = 0;
 	protected Graph<Vertex, Edge> graph;
 
