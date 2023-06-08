@@ -2,6 +2,7 @@ package rs.ac.uns.pmf.decomposers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
@@ -39,6 +40,7 @@ public class StraightforwardDecomposer extends Decomposer {
 	@Override
 	public Map<Vertex, Integer> decompose(Graph<Vertex, Edge> graph) {
 		copyGraph(graph);
+		Map<Vertex, Integer> shellIndices = new TreeMap<>();
 
 		int maxDegree = getMaxDegree();
 

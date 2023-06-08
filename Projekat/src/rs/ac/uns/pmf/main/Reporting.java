@@ -82,13 +82,13 @@ public class Reporting {
 				new PercentageAnalyzer(), new SmallWorldAnalyzer(), new VertexCountAnalyzer() };
 
 		for (String folder : graphs.keySet()) {
-			System.out.println(folder);
 			Graph<Vertex, Edge> graph = graphs.get(folder);
 			Map<Vertex, Integer> shellIndices = decomposer.decompose(graph);
 			List<Graph<Vertex, Edge>> cores = getCores(graph, shellIndices);
 
 			analyzeCentralities(graph, shellIndices, centralityAnalyzers, folder);
 			analyzeMacroscopic(cores, macroscopicAnalyzers, folder);
+			System.out.println(folder + " analysis complete!");
 		}
 	}
 

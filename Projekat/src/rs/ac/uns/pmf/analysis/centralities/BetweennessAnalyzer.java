@@ -22,7 +22,6 @@ public class BetweennessAnalyzer extends CentralitiesAnalyzer {
 		}
 
 		correlation = getCorrelation();
-		System.out.println("Hello");
 	}
 
 	@Override
