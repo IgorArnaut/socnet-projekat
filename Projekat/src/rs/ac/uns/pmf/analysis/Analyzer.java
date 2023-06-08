@@ -6,7 +6,9 @@ import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
 
 public interface Analyzer {
-	
+
 	void analyze(Graph<Vertex, Edge> graph, Decomposer decomposer);
+
+	void report(String folder);
 
 }

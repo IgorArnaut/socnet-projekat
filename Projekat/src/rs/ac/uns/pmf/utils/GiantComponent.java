@@ -12,6 +12,7 @@ public class GiantComponent {
 
 	/**
 	 * Finds the giant component in the network.
+	 * 
 	 * @param graph
 	 * @return
 	 */

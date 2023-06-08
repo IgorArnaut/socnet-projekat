@@ -14,16 +14,18 @@ import rs.ac.uns.pmf.graph.Vertex;
 
 public class BatageljZaversnikDecomposer extends Decomposer {
 
+	private Graph<Vertex, Edge> graph;
+
 	private Vertex[] vertices;
 	private int[] degrees;
 	private int maxDegree;
 	private Map<Integer, List<Vertex>> verticesPerDegree;
 
-	private void populateVertices(Graph<Vertex, Edge> graph) {
+	private void populateVertices() {
 		this.vertices = graph.getVertices().stream().toArray(Vertex[]::new);
 	}
 
-	private void populateDegrees(Graph<Vertex, Edge> graph) {
+	private void populateDegrees() {
 		ToIntFunction<Vertex> mapper = v -> graph.degree(v);
 		this.degrees = Arrays.stream(vertices).mapToInt(mapper).toArray();
 	}
@@ -32,23 +34,25 @@ public class BatageljZaversnikDecomposer extends Decomposer {
 		this.maxDegree = Arrays.stream(degrees).max().getAsInt();
 	}
 
-	private void populateVerticesPerDegree(Graph<Vertex, Edge> graph) {
+	private void populateVerticesPerDegree() {
 		this.verticesPerDegree = new LinkedHashMap<>();
 
 		for (int k = 0; k <= maxDegree; k++)
 			verticesPerDegree.put(k, new ArrayList<>());
 
 		Arrays.stream(vertices).forEach(v -> {
-			int degree = graph.degree(v);
+			int i = Arrays.asList(vertices).indexOf(v);
+			int degree = degrees[i];
 			verticesPerDegree.get(degree).add(v);
 		});
 	}
 
 	private void init(Graph<Vertex, Edge> graph) {
-		populateVertices(graph);
-		populateDegrees(graph);
+		this.graph = graph;
+		populateVertices();
+		populateDegrees();
 		setMaxDegree();
-		populateVerticesPerDegree(graph);
+		populateVerticesPerDegree();
 	}
 
 	private boolean isEmpty(List<Vertex> vertices) {
@@ -61,34 +65,29 @@ public class BatageljZaversnikDecomposer extends Decomposer {
 
 		if (degree > k) {
 			verticesPerDegree.get(degree).remove(vertex);
-			System.out.println("Removed neighbor from " + degree + ": " + vertex);
 			verticesPerDegree.get(degree - 1).add(vertex);
-			System.out.println("Moved neighbor to " + (degree - 1) + ": " + vertex);
-			degrees[k] -= 1;
+			degrees[i] -= 1;
 		}
 	}
 
-	private Vertex removeVertex(Graph<Vertex, Edge> graph, List<Vertex> vertices, int k) {
-		Vertex vertex = vertices.remove(0);
-		System.out.println("Removed vertex from " + k + ": " + vertex);
+	private void removeVertex(List<Vertex> vertices, int k) {
+		int index = (int) (Math.random() * vertices.size());
+		Vertex vertex = vertices.remove(index);
+		shellIndices.put(vertex, k);
 		Collection<Vertex> neighbors = graph.getNeighbors(vertex);
 		neighbors.forEach(n -> changeDegree(n, k));
-		return vertex;
 	}
 
 	@Override
 	public Map<Vertex, Integer> decompose(Graph<Vertex, Edge> graph) {
 		init(graph);
 
-		for (int k = 0; k <= maxDegree; k++) {
-			System.out.println("Core: " + k);
-			
+		for (int k = 1; k <= maxDegree; k++) {
 			if (!isEmpty(verticesPerDegree.get(k))) {
 				List<Vertex> verticesOfDegree = verticesPerDegree.get(k);
 
 				do {
-					Vertex vertex = removeVertex(graph, verticesOfDegree, k);
-					shellIndices.put(vertex, k);
+					removeVertex(verticesOfDegree, k);
 				} while (!verticesOfDegree.isEmpty());
 			}
 		}

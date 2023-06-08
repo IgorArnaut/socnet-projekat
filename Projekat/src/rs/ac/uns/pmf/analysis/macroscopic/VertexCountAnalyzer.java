@@ -1,12 +1,11 @@
 package rs.ac.uns.pmf.analysis.macroscopic;
 
 import edu.uci.ics.jung.graph.Graph;
-import rs.ac.uns.pmf.analysis.Analyzer;
 import rs.ac.uns.pmf.decomposers.Decomposer;
 import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
 
-public class VertexCountAnalyzer implements Analyzer {
+public class VertexCountAnalyzer extends MacroscopicAnalyzer {
 
 	@Override
 	public void analyze(Graph<Vertex, Edge> graph, Decomposer decomposer) {
@@ -16,8 +15,16 @@ public class VertexCountAnalyzer implements Analyzer {
 		do {
 			core = decomposer.getKCore(graph, x);
 			int y = core.getVertexCount();
+			results.put(x, 1.0 * y);
 			x++;
 		} while (core.getVertexCount() > 0);
+	}
+	
+	@Override
+	public void report(String folder) {
+		String file = "vertex-counts.csv";
+		String header = "Core;Vertex count";
+		exportToCSV(folder, file, header);
 	}
 
 }

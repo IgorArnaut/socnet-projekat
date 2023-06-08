@@ -21,29 +21,27 @@ public class GraphReader {
 
 	/**
 	 * Reads a graph from the given file.
+	 * 
 	 * @param file
 	 * @return
 	 */
 	public static Graph<Vertex, Edge> readGraphml(String file) {
-		try (BufferedReader br = new BufferedReader(new FileReader(file))){
+		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			Function<NodeMetadata, Vertex> vt = v -> {
 				return new Vertex(v.getId());
 			};
 			Function<EdgeMetadata, Edge> et = e -> {
-				String source = e.getSource();
-				String target = e.getTarget();
-				return new Edge(source, target);
+				return new Edge(e.getId());
 			};
 			Function<HyperEdgeMetadata, Edge> het = he -> {
-				String source = he.getEndpoints().get(0).getId();
-				String target = he.getEndpoints().get(1).getId();
-				return new Edge(source, target);
+				return new Edge(he.getId());
 			};
 			Function<GraphMetadata, Graph<Vertex, Edge>> gt = g -> {
 				return new UndirectedSparseGraph<>();
 			};
-			
-			GraphMLReader2<Graph<Vertex, Edge>, Vertex, Edge> reader = new GraphMLReader2<Graph<Vertex, Edge>, Vertex, Edge>(br, gt, vt, et, het);
+
+			GraphMLReader2<Graph<Vertex, Edge>, Vertex, Edge> reader = new GraphMLReader2<Graph<Vertex, Edge>, Vertex, Edge>(
+					br, gt, vt, et, het);
 			return reader.readGraph();
 		} catch (IOException | GraphIOException e) {
 			e.printStackTrace();

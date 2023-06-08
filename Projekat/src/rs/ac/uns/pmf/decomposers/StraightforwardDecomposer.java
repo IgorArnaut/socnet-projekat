@@ -1,9 +1,11 @@
 package rs.ac.uns.pmf.decomposers;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
+import edu.uci.ics.jung.algorithms.filters.FilterUtils;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import edu.uci.ics.jung.graph.util.Pair;
@@ -12,53 +14,49 @@ import rs.ac.uns.pmf.graph.Vertex;
 
 public class StraightforwardDecomposer extends Decomposer {
 
-	private void copyPair(Graph<Vertex, Edge> source, Graph<Vertex, Edge> target, Edge edge) {
+	private Graph<Vertex, Edge> copy;
+
+	protected void copyPair(Graph<Vertex, Edge> source, Edge edge) {
 		Pair<Vertex> pair = source.getEndpoints(edge);
-		target.addEdge(edge, pair);
+		copy.addEdge(edge, pair);
 	}
 
-	private Graph<Vertex, Edge> copyGraph(Graph<Vertex, Edge> graph) {
-		Graph<Vertex, Edge> copy = new UndirectedSparseGraph<>();
-		graph.getEdges().forEach(e -> copyPair(graph, copy, e));
-		return copy;
+	protected void copyGraph(Graph<Vertex, Edge> graph) {
+		this.copy = new UndirectedSparseGraph<>();
+		graph.getEdges().forEach(e -> copyPair(graph, e));
 	}
 
-	private int getMaxDegree(Graph<Vertex, Edge> graph) {
-		ToIntFunction<Vertex> function = v -> graph.degree(v);
-		return graph.getVertices().stream().mapToInt(function).max().getAsInt();
+	private int getMaxDegree() {
+		ToIntFunction<Vertex> function = v -> copy.degree(v);
+		return copy.getVertices().stream().mapToInt(function).max().getAsInt();
 	}
 
-	private boolean degreeExists(Graph<Vertex, Edge> graph, int k) {
-		Predicate<Vertex> predicate = v -> graph.degree(v) == k;
-		return graph.getVertices().stream().anyMatch(predicate);
+	private boolean degreeExists(int k) {
+		Predicate<Vertex> predicate = v -> copy.degree(v) == k;
+		return copy.getVertices().stream().anyMatch(predicate);
 	}
 
 	@Override
 	public Map<Vertex, Integer> decompose(Graph<Vertex, Edge> graph) {
-		Graph<Vertex, Edge> copy = copyGraph(graph);
-		Graph<Vertex, Edge> temp = null;
+		copyGraph(graph);
 
-		int maxDegree = getMaxDegree(copy);
+		int maxDegree = getMaxDegree();
 
-		for (int k = 0; k <= maxDegree; k++) {
+		for (int k = 1; k <= maxDegree; k++) {
+			final int k2 = k;
+
 			do {
-				temp = new UndirectedSparseGraph<>();
-
-				for (Edge edge : copy.getEdges()) {
-					Pair<Vertex> pair = copy.getEndpoints(edge);
-					Vertex first = pair.getFirst();
-					Vertex second = pair.getSecond();
-					boolean inCore = copy.degree(first) > k && copy.degree(second) > k;
-
-					if (inCore) {
-						temp.addEdge(edge, pair);
-						shellIndices.put(first, k);
-						shellIndices.put(second, k);
+				Predicate<Vertex> predicate = v -> {
+					if (copy.degree(v) > k2)
+						return true;
+					else {
+						shellIndices.put(v, k2);
+						return false;
 					}
-				}
-
-				copy = temp;
-			} while (degreeExists(copy, k));
+				};
+				List<Vertex> vertices = copy.getVertices().stream().filter(predicate).toList();
+				copy = FilterUtils.createInducedSubgraph(vertices, copy);
+			} while (degreeExists(k));
 		}
 
 		return shellIndices;

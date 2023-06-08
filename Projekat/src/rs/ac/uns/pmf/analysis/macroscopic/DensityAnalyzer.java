@@ -1,12 +1,11 @@
 package rs.ac.uns.pmf.analysis.macroscopic;
 
 import edu.uci.ics.jung.graph.Graph;
-import rs.ac.uns.pmf.analysis.Analyzer;
 import rs.ac.uns.pmf.decomposers.Decomposer;
 import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
 
-public class DensityAnalyzer implements Analyzer {
+public class DensityAnalyzer extends MacroscopicAnalyzer {
 
 	private double getDensity(Graph<Vertex, Edge> graph) {
 		int vertexCount = graph.getVertexCount();
@@ -26,8 +25,16 @@ public class DensityAnalyzer implements Analyzer {
 		do {
 			core = decomposer.getKCore(graph, x);
 			double y = getDensity(core);
+			results.put(x, y);
 			x++;
 		} while (core.getVertexCount() > 0);
+	}
+	
+	@Override
+	public void report(String folder) {
+		String file = "densities.csv";
+		String header = "Core;Density";
+		exportToCSV(folder, file, header);
 	}
 
 }

@@ -10,12 +10,12 @@ public class BarabasiAlbertGenerator extends Generator {
 
 	private int n;
 	private double p;
-	
+
 	public BarabasiAlbertGenerator(int n, double p) {
 		this.n = n;
 		this.p = p;
 	}
-	
+
 	private int getDegreeSum() {
 		ToIntFunction<Vertex> function = v -> graph.degree(v);
 		return graph.getVertices().stream().mapToInt(function).sum();
@@ -33,16 +33,12 @@ public class BarabasiAlbertGenerator extends Generator {
 	}
 
 	private void insertEdges(Vertex target) {
-		String targetId = "" + target;
-
 		int targetD = getDegree();
 		int dSum = getDegreeSum();
 
 		for (int j = 0; j < targetD; j++) {
 			Vertex source = randomVertex();
-			String sourceId = "" + source;
-
-			Edge edge = new Edge(sourceId, targetId);
+			Edge edge = new Edge(Integer.toString(id));
 
 			double q = graph.degree(source) / dSum;
 			// double probability = graph.degree(source) / (dSum + targetD); ??
@@ -63,6 +59,7 @@ public class BarabasiAlbertGenerator extends Generator {
 
 		ErdosRenyiGenerator generator = new ErdosRenyiGenerator(n, p);
 		this.graph = generator.generate();
+		this.id = graph.getEdgeCount() - 1;
 
 		insertVertices(m);
 		return graph;

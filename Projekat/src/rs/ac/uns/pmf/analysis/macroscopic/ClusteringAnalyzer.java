@@ -4,12 +4,11 @@ import java.util.Map;
 
 import edu.uci.ics.jung.algorithms.metrics.Metrics;
 import edu.uci.ics.jung.graph.Graph;
-import rs.ac.uns.pmf.analysis.Analyzer;
 import rs.ac.uns.pmf.decomposers.Decomposer;
 import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
 
-public class ClusteringAnalyzer implements Analyzer {
+public class ClusteringAnalyzer extends MacroscopicAnalyzer {
 
 	private double getAvgClusteringCoefficient(Graph<Vertex, Edge> graph) {
 		int n = graph.getVertexCount();
@@ -28,8 +27,16 @@ public class ClusteringAnalyzer implements Analyzer {
 		do {
 			core = decomposer.getKCore(graph, x);
 			double y = getAvgClusteringCoefficient(core);
+			results.put(x, y);
 			x++;
 		} while (core.getVertexCount() > 0);
+	}
+	
+	@Override
+	public void report(String folder) {
+		String file = "clustering-coefficients.csv";
+		String header = "Core;Clustering coefficient";
+		exportToCSV(folder, file, header);
 	}
 
 }

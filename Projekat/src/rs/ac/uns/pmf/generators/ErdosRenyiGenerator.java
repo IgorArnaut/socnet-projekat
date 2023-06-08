@@ -12,7 +12,7 @@ public class ErdosRenyiGenerator extends Generator {
 
 	private Vertex[] vertices;
 	private Edge[][] edges;
-	
+
 	public ErdosRenyiGenerator(int n, double p) {
 		this.n = n;
 		this.p = p;
@@ -28,9 +28,8 @@ public class ErdosRenyiGenerator extends Generator {
 	private void populateEdges() {
 		for (int i = 0; i < n - 1; i++) {
 			for (int j = 0; j < n; j++) {
-				String sourceId = "" + vertices[i];
-				String targetId = "" + vertices[j];
-				edges[i][j] = new Edge(sourceId, targetId);
+				edges[i][j] = new Edge(Integer.toString(id));
+				id++;
 			}
 		}
 	}

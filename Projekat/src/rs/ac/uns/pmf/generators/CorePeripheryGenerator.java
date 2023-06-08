@@ -14,7 +14,7 @@ public class CorePeripheryGenerator extends Generator {
 
 	private final int COMMUNITY_COUNT = 2;
 	private Map<Integer, List<Vertex>> communities;
-	
+
 	private int n;
 	private double p;
 	private double q;
@@ -47,11 +47,8 @@ public class CorePeripheryGenerator extends Generator {
 				for (int k = j + 1; k < vertices.size(); k++) {
 					Vertex source = vertices.get(j);
 					Vertex target = vertices.get(k);
-					
-					String sourceId = "" + source;
-					String targetId = "" + target;
-					
-					Edge edge = new Edge(sourceId, targetId);
+					Edge edge = new Edge(Integer.toString(id));
+					id++;
 					insertEdge(edge, source, target, p);
 				}
 			}
@@ -63,11 +60,9 @@ public class CorePeripheryGenerator extends Generator {
 		List<Vertex> targets = communities.get(1);
 
 		sources.forEach(source -> {
-			targets.forEach(target -> {				
-				String sourceId = "" + source;
-				String targetId = "" + target;
-				
-				Edge edge = new Edge(sourceId, targetId);
+			targets.forEach(target -> {
+				Edge edge = new Edge(Integer.toString(id));
+				id++;
 				insertEdge(edge, source, target, q);
 			});
 		});

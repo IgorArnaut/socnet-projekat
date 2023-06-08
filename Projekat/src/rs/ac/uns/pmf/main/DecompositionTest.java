@@ -19,32 +19,31 @@ public class DecompositionTest {
 	private Map<String, Graph<Vertex, Edge>> graphs;
 	private final Decomposer sfDecomposer = new StraightforwardDecomposer();
 	private final Decomposer bzDecomposer = new BatageljZaversnikDecomposer();
-	
+
 	public DecompositionTest() {
 		this.graphs = new LinkedHashMap<>();
 		graphs.put("Graph 1", GraphReader.readGraphml("resources/graph1.graphml"));
 		graphs.put("Graph 2", GraphReader.readGraphml("resources/graph2.graphml"));
 		graphs.put("Graph 3", GraphReader.readGraphml("resources/graph3.graphml"));
-		
-		graphs.put("ER Graph", new ErdosRenyiGenerator(10, 0.1).generate());
-		graphs.put("BA Graph", new BarabasiAlbertGenerator(10, 0.1).generate());
-		graphs.put("Core Periphery Graph", new CorePeripheryGenerator(10, 0.1, 0.01).generate());
+
+		graphs.put("ER Graph", new ErdosRenyiGenerator(200, 0.05).generate());
+		graphs.put("BA Graph", new BarabasiAlbertGenerator(200, 0.05).generate());
+		graphs.put("Core Periphery Graph", new CorePeripheryGenerator(200, 0.05, 0.005).generate());
 	}
-	
+
 	public void test() {
 		graphs.forEach((k, v) -> {
 			System.out.println(k);
-			System.out.println(v);
-			// Map<Vertex, Integer> sfIndices = sfDecomposer.decompose(v);
+			// System.out.println(v);
+			Map<Vertex, Integer> sfIndices = sfDecomposer.decompose(v);
 			Map<Vertex, Integer> bzIndices = bzDecomposer.decompose(v);
-			
-			System.out.println("SF: ");
-			// sfIndices.forEach((kx, vx) -> System.out.println("Node: " + kx + ", shellIndex: " + vx));
+
+			System.out.println("SF: " + sfIndices);
 			System.out.println("BZ: " + bzIndices);
-			
-			// System.out.println("Equals: " + sfIndices.equals(bzIndices));
+
+			System.out.println("Equal shell indices: " + sfIndices.equals(bzIndices));
 			System.out.println();
 		});
 	}
-	
+
 }

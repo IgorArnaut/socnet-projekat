@@ -13,7 +13,7 @@ import rs.ac.uns.pmf.graph.Vertex;
 public abstract class Decomposer {
 
 	protected Map<Vertex, Integer> shellIndices;
-	
+
 	public Decomposer() {
 		this.shellIndices = new TreeMap<>();
 	}

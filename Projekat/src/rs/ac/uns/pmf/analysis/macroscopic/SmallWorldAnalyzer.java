@@ -5,13 +5,12 @@ import java.util.List;
 
 import edu.uci.ics.jung.algorithms.shortestpath.UnweightedShortestPath;
 import edu.uci.ics.jung.graph.Graph;
-import rs.ac.uns.pmf.analysis.Analyzer;
 import rs.ac.uns.pmf.decomposers.Decomposer;
 import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
 import rs.ac.uns.pmf.utils.GiantComponent;
 
-public class SmallWorldAnalyzer implements Analyzer {
+public class SmallWorldAnalyzer extends MacroscopicAnalyzer {
 
 	private GiantComponent component = new GiantComponent();
 
@@ -46,8 +45,16 @@ public class SmallWorldAnalyzer implements Analyzer {
 			core = decomposer.getKCore(graph, x);
 			Graph<Vertex, Edge> giantComponent = component.getGiantComponent(graph);
 			double y = getSmallWorldCoefficient(giantComponent);
+			results.put(x, y);
 			x++;
 		} while (core.getVertexCount() > 0);
+	}
+	
+	@Override
+	public void report(String folder) {
+		String file = "giant-component-small-world-coefficients.csv";
+		String header = "Core;Giant component small world coefficient";
+		exportToCSV(folder, file, header);
 	}
 
 }
