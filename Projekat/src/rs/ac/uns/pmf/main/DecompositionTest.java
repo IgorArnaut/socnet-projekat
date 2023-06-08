@@ -28,7 +28,7 @@ public class DecompositionTest {
 
 		graphs.put("ER Graph", new ErdosRenyiGenerator(200, 0.05).generate());
 		graphs.put("BA Graph", new BarabasiAlbertGenerator(200, 0.05).generate());
-		graphs.put("Core Periphery Graph", new CorePeripheryGenerator(200, 0.05, 0.005).generate());
+		graphs.put("Core Periphery Graph", new CorePeripheryGenerator(200, 0.1, 0.05).generate());
 	}
 
 	public void test() {

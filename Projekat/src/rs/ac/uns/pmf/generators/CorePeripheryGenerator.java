@@ -39,23 +39,21 @@ public class CorePeripheryGenerator extends Generator {
 		}
 	}
 
-	private void insertCommunities() {
-		for (int i = 0; i < COMMUNITY_COUNT; i++) {
-			List<Vertex> vertices = communities.get(i);
+	private void insertCore() {
+		List<Vertex> core = communities.get(0);
 
-			for (int j = 0; j < vertices.size() - 1; j++) {
-				for (int k = j + 1; k < vertices.size(); k++) {
-					Vertex source = vertices.get(j);
-					Vertex target = vertices.get(k);
-					Edge edge = new Edge(Integer.toString(id));
-					id++;
-					insertEdge(edge, source, target, p);
-				}
+		for (int i = 0; i < core.size() - 1; i++) {
+			for (int j = i + 1; j < core.size(); j++) {
+				Vertex source = core.get(i);
+				Vertex target = core.get(j);
+				Edge edge = new Edge(Integer.toString(id));
+				id++;
+				insertEdge(edge, source, target, p);
 			}
 		}
 	}
 
-	private void linkCommunities() {
+	private void insertPeriphery() {
 		List<Vertex> sources = communities.get(0);
 		List<Vertex> targets = communities.get(1);
 
@@ -72,8 +70,8 @@ public class CorePeripheryGenerator extends Generator {
 	public Graph<Vertex, Edge> generate() {
 		this.graph = new UndirectedSparseGraph<>();
 		populateCommunities();
-		insertCommunities();
-		linkCommunities();
+		insertCore();
+		insertPeriphery();
 		return graph;
 	}
 
