@@ -13,7 +13,7 @@ import edu.uci.ics.jung.graph.Graph;
 import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
 
-public class BatageljZaversnikDecomposer extends Decomposer {
+public class BatageljZaversnikDecomposer implements Decomposer {
 
 	private Graph<Vertex, Edge> graph;
 

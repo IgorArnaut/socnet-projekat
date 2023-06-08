@@ -13,7 +13,7 @@ import edu.uci.ics.jung.graph.util.Pair;
 import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
 
-public class StraightforwardDecomposer extends Decomposer {
+public class StraightforwardDecomposer implements Decomposer {
 
 	private Graph<Vertex, Edge> copy;
 
