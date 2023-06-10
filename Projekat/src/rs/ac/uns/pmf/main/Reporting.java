@@ -18,8 +18,9 @@ import rs.ac.uns.pmf.analysis.macroscopic.ComponentCountAnalyzer;
 import rs.ac.uns.pmf.analysis.macroscopic.DensityAnalyzer;
 import rs.ac.uns.pmf.analysis.macroscopic.DiameterAnalyzer;
 import rs.ac.uns.pmf.analysis.macroscopic.EdgeCountAnalyzer;
+import rs.ac.uns.pmf.analysis.macroscopic.EdgePercentageAnalyzer;
 import rs.ac.uns.pmf.analysis.macroscopic.MacroscopicAnalyzer;
-import rs.ac.uns.pmf.analysis.macroscopic.PercentageAnalyzer;
+import rs.ac.uns.pmf.analysis.macroscopic.VertexPercentageAnalyzer;
 import rs.ac.uns.pmf.analysis.macroscopic.SmallWorldAnalyzer;
 import rs.ac.uns.pmf.analysis.macroscopic.VertexCountAnalyzer;
 import rs.ac.uns.pmf.decomposers.Decomposer;
@@ -79,7 +80,8 @@ public class Reporting {
 				new ClosenessAnalyzer(), new DegreeAnalyzer(), new EigenvectorAnalyzer(), };
 		MacroscopicAnalyzer[] macroscopicAnalyzers = new MacroscopicAnalyzer[] { new ClusteringAnalyzer(),
 				new ComponentCountAnalyzer(), new DensityAnalyzer(), new DiameterAnalyzer(), new EdgeCountAnalyzer(),
-				new PercentageAnalyzer(), new SmallWorldAnalyzer(), new VertexCountAnalyzer() };
+				new VertexPercentageAnalyzer(), new EdgePercentageAnalyzer(), new SmallWorldAnalyzer(),
+				new VertexCountAnalyzer() };
 
 		for (String folder : graphs.keySet()) {
 			Graph<Vertex, Edge> graph = graphs.get(folder);
