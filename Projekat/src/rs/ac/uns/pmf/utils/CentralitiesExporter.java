@@ -9,10 +9,10 @@ import java.util.List;
 
 public class CentralitiesExporter implements CSVExporter {
 
-	private List<Triple<String, Integer, Double>> results;
+	private List<Triple<String, Double, Double>> results;
 	private double correlation;
 
-	public void setData(List<Triple<String, Integer, Double>> results, double correlation) {
+	public void setData(List<Triple<String, Double, Double>> results, double correlation) {
 		this.results = results;
 		this.correlation = correlation;
 	}
@@ -26,8 +26,8 @@ public class CentralitiesExporter implements CSVExporter {
 			bw.write(header);
 			bw.newLine();
 
-			for (Triple<String, Integer, Double> r : results) {
-				bw.append(String.format("%s;%d;%.2f", r.first(), r.second(), r.third()));
+			for (Triple<String, Double, Double> r : results) {
+				bw.append(String.format("%s;%.2f;%.2f", r.first(), r.second(), r.third()));
 				bw.newLine();
 			}
 

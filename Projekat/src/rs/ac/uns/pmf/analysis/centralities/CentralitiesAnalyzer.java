@@ -1,6 +1,7 @@
 package rs.ac.uns.pmf.analysis.centralities;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -15,32 +16,41 @@ import rs.ac.uns.pmf.utils.Triple;
 
 public abstract class CentralitiesAnalyzer implements Reporter {
 
+	protected Vertex[] vertices;
+	protected double[] xs;
+	protected double[] ys;
+
 	protected double correlation;
-	protected List<Triple<String, Integer, Double>> results;
+	protected List<Triple<String, Double, Double>> results;
+
 	protected CentralitiesExporter exporter = new CentralitiesExporter();
 
 	public CentralitiesAnalyzer() {
 		this.results = new ArrayList<>();
 	}
 
+	protected void insertValues() {
+		double min = Arrays.stream(ys).min().getAsDouble();
+		double max = Arrays.stream(ys).max().getAsDouble();
+
+		for (int i = 0; i < vertices.length; i++) {
+			ys[i] = (ys[i] - min) / (max - min);
+
+			String id = vertices[i].getId();
+			double x = xs[i];
+			double y = ys[i];
+			results.add(new Triple<>(id, x, y));
+		}
+
+		if (min == max)
+			correlation = 0.0;
+		else {
+			SpearmansCorrelation sc = new SpearmansCorrelation();
+			correlation = sc.correlation(xs, ys);
+		}
+	}
+
 	public abstract void analyze(Graph<Vertex, Edge> graph, Map<Vertex, Integer> shellIndices);
-
-	private double calculateCorrelation(List<Double> xs, List<Double> ys) {
-		SpearmansCorrelation correlation = new SpearmansCorrelation();
-		double[] xArray = xs.stream().mapToDouble(d -> d).toArray();
-		double[] yArray = ys.stream().mapToDouble(d -> d).toArray();
-		return correlation.correlation(xArray, yArray);
-	}
-
-	protected double getCorrelation() {
-		List<Double> xs = new ArrayList<>();
-		List<Double> ys = new ArrayList<>();
-		results.forEach(t -> {
-			xs.add(1.0 * t.second());
-			ys.add(t.third());
-		});
-		return calculateCorrelation(xs, ys);
-	}
 
 	@Override
 	public void report(String folder) {

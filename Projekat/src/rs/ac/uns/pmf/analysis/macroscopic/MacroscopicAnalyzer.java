@@ -13,6 +13,7 @@ import rs.ac.uns.pmf.utils.MacroscopicExporter;
 public abstract class MacroscopicAnalyzer implements Reporter {
 
 	protected Map<Integer, Double> results;
+
 	protected MacroscopicExporter exporter = new MacroscopicExporter();
 
 	public MacroscopicAnalyzer() {

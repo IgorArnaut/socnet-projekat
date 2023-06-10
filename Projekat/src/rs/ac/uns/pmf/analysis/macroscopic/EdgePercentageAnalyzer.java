@@ -17,7 +17,7 @@ public class EdgePercentageAnalyzer extends MacroscopicAnalyzer {
 
 		double e = graph.getVertexCount();
 		double eg = component.getVertexCount();
-		return (100.0 * e) / eg;
+		return (100.0 * eg) / e;
 	}
 
 	@Override

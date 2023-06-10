@@ -17,7 +17,7 @@ public class VertexPercentageAnalyzer extends MacroscopicAnalyzer {
 
 		double n = graph.getVertexCount();
 		double ng = component.getVertexCount();
-		return (100.0 * n) / ng;
+		return (100.0 * ng) / n;
 	}
 
 	@Override
