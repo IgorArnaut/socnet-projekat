@@ -44,7 +44,7 @@ public class StraightforwardDecomposer implements Decomposer {
 
 		int maxDegree = getMaxDegree();
 
-		for (int k = 1; k <= maxDegree; k++) {
+		for (int k = 0; k <= maxDegree; k++) {
 			final int k2 = k;
 
 			do {

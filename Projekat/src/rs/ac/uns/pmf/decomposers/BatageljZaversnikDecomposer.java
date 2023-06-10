@@ -56,10 +56,6 @@ public class BatageljZaversnikDecomposer implements Decomposer {
 		populateVerticesPerDegree();
 	}
 
-	private boolean isEmpty(List<Vertex> vertices) {
-		return vertices == null || vertices.isEmpty();
-	}
-
 	private void changeDegree(Vertex vertex, int k) {
 		int i = Arrays.asList(vertices).indexOf(vertex);
 		int degree = degrees[i];
@@ -72,11 +68,13 @@ public class BatageljZaversnikDecomposer implements Decomposer {
 	}
 
 	private void removeVertex(Map<Vertex, Integer> shellIndices, List<Vertex> vertices, int k) {
-		int index = (int) (Math.random() * vertices.size());
-		Vertex vertex = vertices.remove(index);
-		shellIndices.put(vertex, k);
-		Collection<Vertex> neighbors = graph.getNeighbors(vertex);
-		neighbors.forEach(n -> changeDegree(n, k));
+		if (!vertices.isEmpty()) {
+			int index = (int) (Math.random() * vertices.size());
+			Vertex vertex = vertices.remove(index);
+			shellIndices.put(vertex, k);
+			Collection<Vertex> neighbors = graph.getNeighbors(vertex);
+			neighbors.forEach(n -> changeDegree(n, k));
+		}
 	}
 
 	@Override
@@ -84,14 +82,12 @@ public class BatageljZaversnikDecomposer implements Decomposer {
 		init(graph);
 		Map<Vertex, Integer> shellIndices = new TreeMap<>();
 
-		for (int k = 1; k <= maxDegree; k++) {
-			if (!isEmpty(verticesPerDegree.get(k))) {
-				List<Vertex> verticesOfDegree = verticesPerDegree.get(k);
+		for (int k = 0; k <= maxDegree; k++) {
+			List<Vertex> verticesOfDegree = verticesPerDegree.get(k);
 
-				do {
-					removeVertex(shellIndices, verticesOfDegree, k);
-				} while (!verticesOfDegree.isEmpty());
-			}
+			do {
+				removeVertex(shellIndices, verticesOfDegree, k);
+			} while (!verticesOfDegree.isEmpty());
 		}
 
 		return shellIndices;
