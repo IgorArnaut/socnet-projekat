@@ -8,26 +8,14 @@ import java.util.function.Predicate;
 
 import edu.uci.ics.jung.algorithms.filters.FilterUtils;
 import edu.uci.ics.jung.graph.Graph;
-import rs.ac.uns.pmf.analysis.centralities.BetweennessAnalyzer;
-import rs.ac.uns.pmf.analysis.centralities.CentralitiesAnalyzer;
-import rs.ac.uns.pmf.analysis.centralities.ClosenessAnalyzer;
-import rs.ac.uns.pmf.analysis.centralities.DegreeAnalyzer;
-import rs.ac.uns.pmf.analysis.centralities.EigenvectorAnalyzer;
-import rs.ac.uns.pmf.analysis.macroscopic.ClusteringAnalyzer;
-import rs.ac.uns.pmf.analysis.macroscopic.ComponentCountAnalyzer;
-import rs.ac.uns.pmf.analysis.macroscopic.DensityAnalyzer;
-import rs.ac.uns.pmf.analysis.macroscopic.DiameterAnalyzer;
-import rs.ac.uns.pmf.analysis.macroscopic.EdgeCountAnalyzer;
-import rs.ac.uns.pmf.analysis.macroscopic.EdgePercentageAnalyzer;
-import rs.ac.uns.pmf.analysis.macroscopic.MacroscopicAnalyzer;
-import rs.ac.uns.pmf.analysis.macroscopic.VertexPercentageAnalyzer;
-import rs.ac.uns.pmf.analysis.macroscopic.SmallWorldAnalyzer;
-import rs.ac.uns.pmf.analysis.macroscopic.VertexCountAnalyzer;
 import rs.ac.uns.pmf.decomposers.Decomposer;
 import rs.ac.uns.pmf.decomposers.StraightforwardDecomposer;
 import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
+import rs.ac.uns.pmf.io.CSVExporter;
+import rs.ac.uns.pmf.io.CentralitiesExporter;
 import rs.ac.uns.pmf.io.GraphReader;
+import rs.ac.uns.pmf.io.MacroscopicExporter;
 
 public class Reporting {
 
@@ -39,15 +27,6 @@ public class Reporting {
 		graphs.put("celegansneural", GraphReader.readGraphml("resources/celegansneural.graphml"));
 		graphs.put("football", GraphReader.readGraphml("resources/football.graphml"));
 		graphs.put("polbooks", GraphReader.readGraphml("resources/polbooks.graphml"));
-	}
-
-	private void analyzeCentralities(Graph<Vertex, Edge> graph, Map<Vertex, Integer> shellIndices,
-			CentralitiesAnalyzer[] analyzers, String folder) {
-
-		for (CentralitiesAnalyzer analyzer : analyzers) {
-			analyzer.analyze(graph, shellIndices);
-			analyzer.report("resources/" + folder + "/");
-		}
 	}
 
 	private List<Graph<Vertex, Edge>> getCores(Graph<Vertex, Edge> graph, Map<Vertex, Integer> shellIndices) {
@@ -67,30 +46,19 @@ public class Reporting {
 		return cores;
 	}
 
-	private void analyzeMacroscopic(List<Graph<Vertex, Edge>> cores, MacroscopicAnalyzer[] analyzers, String folder) {
-		for (MacroscopicAnalyzer analyzer : analyzers) {
-			analyzer.analyze(cores);
-			analyzer.report("resources/" + folder + "/");
-		}
-	}
-
 	public void saveReport() {
 		Decomposer decomposer = new StraightforwardDecomposer();
-		CentralitiesAnalyzer[] centralityAnalyzers = new CentralitiesAnalyzer[] { new BetweennessAnalyzer(),
-				new ClosenessAnalyzer(), new DegreeAnalyzer(), new EigenvectorAnalyzer(), };
-		MacroscopicAnalyzer[] macroscopicAnalyzers = new MacroscopicAnalyzer[] { new ClusteringAnalyzer(),
-				new ComponentCountAnalyzer(), new DensityAnalyzer(), new DiameterAnalyzer(), new EdgeCountAnalyzer(),
-				new VertexPercentageAnalyzer(), new EdgePercentageAnalyzer(), new SmallWorldAnalyzer(),
-				new VertexCountAnalyzer() };
 
-		for (String folder : graphs.keySet()) {
-			Graph<Vertex, Edge> graph = graphs.get(folder);
+		for (String name : graphs.keySet()) {
+			Graph<Vertex, Edge> graph = graphs.get(name);
 			Map<Vertex, Integer> shellIndices = decomposer.decompose(graph);
 			List<Graph<Vertex, Edge>> cores = getCores(graph, shellIndices);
 
-			analyzeCentralities(graph, shellIndices, centralityAnalyzers, folder);
-			analyzeMacroscopic(cores, macroscopicAnalyzers, folder);
-			System.out.println(folder + " analysis complete!");
+			CSVExporter me = new MacroscopicExporter(cores);
+			me.exportToCSV(name, "macroscopic");
+			CSVExporter ce = new CentralitiesExporter(graph, shellIndices);
+			ce.exportToCSV(name, "centralities");
+			System.out.println(name + " analysis complete!");
 		}
 	}
 

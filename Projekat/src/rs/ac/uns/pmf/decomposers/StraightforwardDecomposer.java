@@ -37,6 +37,14 @@ public class StraightforwardDecomposer implements Decomposer {
 		return copy.getVertices().stream().anyMatch(predicate);
 	}
 
+	private boolean put(Map<Vertex, Integer> shellIndices, Vertex v, final int k2) {
+		if (copy.degree(v) > k2)
+			return true;
+
+		shellIndices.put(v, k2);
+		return false;
+	}
+
 	@Override
 	public Map<Vertex, Integer> decompose(Graph<Vertex, Edge> graph) {
 		copyGraph(graph);
@@ -48,14 +56,7 @@ public class StraightforwardDecomposer implements Decomposer {
 			final int k2 = k;
 
 			do {
-				Predicate<Vertex> predicate = v -> {
-					if (copy.degree(v) > k2)
-						return true;
-					else {
-						shellIndices.put(v, k2);
-						return false;
-					}
-				};
+				Predicate<Vertex> predicate = v -> put(shellIndices, v, k2);
 				List<Vertex> vertices = copy.getVertices().stream().filter(predicate).toList();
 				copy = FilterUtils.createInducedSubgraph(vertices, copy);
 			} while (degreeExists(k));
