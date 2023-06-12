@@ -15,7 +15,7 @@ public abstract class Centralities {
 	protected void normalizeAll(double[] xs) {
 		double min = Arrays.stream(xs).min().getAsDouble();
 		double max = Arrays.stream(xs).max().getAsDouble();
-		Arrays.stream(xs).forEach(x -> normalize(x, min, max));
+		xs = Arrays.stream(xs).map(x -> normalize(x, min, max)).toArray();
 	}
 
 	public abstract double[] getValues(Graph<Vertex, Edge> graph, Vertex[] vertices);
