@@ -15,7 +15,6 @@ public class Betweenness extends Centralities {
 		BetweennessCentrality<Vertex, Edge> centrality = new BetweennessCentrality<>(graph);
 		ToDoubleFunction<Vertex> mapper = v -> centrality.getVertexScore(v);
 		double[] xs = Arrays.stream(vertices).mapToDouble(mapper).toArray();
-		normalizeAll(xs);
 		return xs;
 	}
 
