@@ -32,6 +32,7 @@ public class CentralitiesWrapper {
 		this.vertices = shellIndices.keySet().stream().toArray(Vertex[]::new);
 		this.indices = shellIndices.keySet().stream().mapToDouble(v -> shellIndices.get(v)).toArray();
 		this.degrees = degree.getValues(graph, vertices);
+		
 		this.betweennessCentralities = betweenness.getValues(graph, vertices);
 		this.closenessCentralities = closeness.getValues(graph, vertices);
 		this.eigenvectorCentralities = eigenvector.getValues(graph, vertices);

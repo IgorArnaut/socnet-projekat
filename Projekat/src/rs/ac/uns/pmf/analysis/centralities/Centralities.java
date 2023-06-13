@@ -9,15 +9,18 @@ import rs.ac.uns.pmf.graph.Vertex;
 public abstract class Centralities {
 	
 	private double normalize(double x, double min, double max) {
+		if (min == max)
+			return x;
+		
 		return (x - min) / (max - min);
 	}
 	
-	protected void normalizeAll(double[] xs) {
+	protected double[] normalizeAll(double[] xs) {
 		double min = Arrays.stream(xs).min().getAsDouble();
 		double max = Arrays.stream(xs).max().getAsDouble();
-		xs = Arrays.stream(xs).map(x -> normalize(x, min, max)).toArray();
+		return Arrays.stream(xs).map(x -> normalize(x, min, max)).toArray();
 	}
-
+	
 	public abstract double[] getValues(Graph<Vertex, Edge> graph, Vertex[] vertices);
 
 }
