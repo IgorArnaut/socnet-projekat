@@ -15,6 +15,7 @@ public class Eigenvector extends Centralities {
 		EigenvectorCentrality<Vertex, Edge> centrality = new EigenvectorCentrality<>(graph);
 		ToDoubleFunction<Vertex> mapper = v -> centrality.getVertexScore(v);
 		double[] xs = Arrays.stream(vertices).mapToDouble(mapper).toArray();
+		normalizeAll(xs);
 		return xs;
 	}
 

@@ -15,6 +15,7 @@ public class Closeness extends Centralities {
 		ClosenessCentrality<Vertex, Edge> centrality = new ClosenessCentrality<>(graph);
 		ToDoubleFunction<Vertex> mapper = v -> centrality.getVertexScore(v);
 		double[] xs = Arrays.stream(vertices).mapToDouble(mapper).toArray();
+		normalizeAll(xs);
 		return xs;
 	}
 

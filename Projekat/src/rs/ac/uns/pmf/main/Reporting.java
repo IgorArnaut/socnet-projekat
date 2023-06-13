@@ -57,7 +57,7 @@ public class Reporting {
 			CSVExporter me = new MacroscopicExporter(cores);
 			me.exportToCSV(name, "macroscopic");
 			CSVExporter ce = new CentralitiesExporter(graph, shellIndices);
-			ce.exportToCSV(name, "centralities2");
+			ce.exportToCSV(name, "centralities");
 			System.out.println(name + " analysis complete!");
 		}
 	}
