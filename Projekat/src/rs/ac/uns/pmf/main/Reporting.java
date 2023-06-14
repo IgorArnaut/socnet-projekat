@@ -8,8 +8,8 @@ import java.util.function.Predicate;
 
 import edu.uci.ics.jung.algorithms.filters.FilterUtils;
 import edu.uci.ics.jung.graph.Graph;
+import rs.ac.uns.pmf.decomposers.BatageljZaversnikDecomposer;
 import rs.ac.uns.pmf.decomposers.Decomposer;
-import rs.ac.uns.pmf.decomposers.StraightforwardDecomposer;
 import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
 import rs.ac.uns.pmf.io.CSVExporter;
@@ -47,7 +47,7 @@ public class Reporting {
 	}
 
 	public void saveReport() {
-		Decomposer decomposer = new StraightforwardDecomposer();
+		Decomposer decomposer = new BatageljZaversnikDecomposer();
 
 		for (String name : graphs.keySet()) {
 			Graph<Vertex, Edge> graph = graphs.get(name);
