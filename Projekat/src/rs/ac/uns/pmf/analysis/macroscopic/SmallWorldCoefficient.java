@@ -3,7 +3,7 @@ package rs.ac.uns.pmf.analysis.macroscopic;
 import java.util.List;
 import java.util.function.ToDoubleFunction;
 
-import edu.uci.ics.jung.algorithms.shortestpath.UnweightedShortestPath;
+import edu.uci.ics.jung.algorithms.shortestpath.DijkstraDistance;
 import edu.uci.ics.jung.graph.Graph;
 import rs.ac.uns.pmf.graph.Edge;
 import rs.ac.uns.pmf.graph.Vertex;
@@ -14,7 +14,7 @@ public class SmallWorldCoefficient implements Macroscopic {
 	private GiantComponent gc = new GiantComponent();
 
 	private double getDistanceSum(Graph<Vertex, Edge> graph, Vertex[] vertices) {
-		UnweightedShortestPath<Vertex, Edge> usp = new UnweightedShortestPath<>(graph);
+		DijkstraDistance<Vertex, Edge> usp = new DijkstraDistance<>(graph);
 		double distanceSum = 0.0;
 
 		for (int i = 0; i < vertices.length - 1; i++) {
@@ -32,7 +32,7 @@ public class SmallWorldCoefficient implements Macroscopic {
 		Vertex[] vertices = graph.getVertices().toArray(Vertex[]::new);
 		int n = vertices.length;
 
-		if (n - 1 == 0)
+		if (n == 0 || n - 1 == 0)
 			return 0.0;
 
 		double distanceSum = getDistanceSum(graph, vertices);

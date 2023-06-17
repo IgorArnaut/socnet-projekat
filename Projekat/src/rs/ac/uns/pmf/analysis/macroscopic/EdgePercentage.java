@@ -17,8 +17,8 @@ public class EdgePercentage implements Macroscopic {
 			return 0.0;
 
 		double e = graph.getVertexCount();
-		double eg = component.getVertexCount();
-		return (100.0 * eg) / e;
+		double ec = component.getVertexCount();
+		return (100.0 * ec) / e;
 	}
 
 	private double getPercentage(Graph<Vertex, Edge> graph) {

@@ -10,7 +10,7 @@ import rs.ac.uns.pmf.graph.Vertex;
 public class Density implements Macroscopic {
 
 	private double calculate(int vertexCount, int edgeCount) {
-		if (vertexCount == 0)
+		if (vertexCount == 0 || vertexCount - 1 == 0)
 			return 0.0;
 
 		return 2.0 * edgeCount / (vertexCount * (vertexCount - 1));
